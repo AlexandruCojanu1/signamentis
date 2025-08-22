@@ -727,3 +727,4 @@ if __name__ == "__main__":
         print("❌ Backtest failed")
     
     print("🎉 Optimized Backtester test completed!")
+

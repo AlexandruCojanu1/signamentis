@@ -14,7 +14,6 @@ Author: SignaMentis Team
 Version: 1.0.0
 """
 
-import os
 import sys
 import logging
 import argparse
@@ -22,7 +21,7 @@ import yaml
 import asyncio
 import pandas as pd
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Dict, List, Optional
 
 # Add scripts directory to path
@@ -43,8 +42,8 @@ from scripts.risk_manager import RiskManager, create_risk_manager
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            handlers=[
-            logging.FileHandler('signa_mentis.log'),
+    handlers=[
+        logging.FileHandler('signa_mentis.log'),
         logging.StreamHandler(sys.stdout)
     ]
 )
@@ -141,9 +140,9 @@ class SignaMentis:
         # Initialize BiLSTM model
         try:
             bilstm_config = model_config.get('bilstm', {})
-            input_size = bilstm_config.get('input_size', 50)
+            bilstm_input_size = bilstm_config.get('input_size', 50)
             
-            bilstm_model = create_bilstm_model(input_size, bilstm_config)
+            bilstm_model = create_bilstm_model(bilstm_input_size, bilstm_config)
             self.models['bilstm'] = bilstm_model
             
             # Register with ensemble
@@ -158,9 +157,9 @@ class SignaMentis:
         # Initialize GRU model
         try:
             gru_config = model_config.get('gru', {})
-            input_size = gru_config.get('input_size', 50)
+            gru_input_size = gru_config.get('input_size', 50)
             
-            gru_model = create_gru_model(input_size, gru_config)
+            gru_model = create_gru_model(gru_input_size, gru_config)
             self.models['gru'] = gru_model
             
             # Register with ensemble
@@ -175,9 +174,9 @@ class SignaMentis:
         # Initialize Transformer model
         try:
             transformer_config = model_config.get('transformer', {})
-            input_size = transformer_config.get('input_size', 50)
+            transformer_input_size = transformer_config.get('input_size', 50)
             
-            transformer_model = create_transformer_model(input_size, transformer_config)
+            transformer_model = create_transformer_model(transformer_input_size, transformer_config)
             self.models['transformer'] = transformer_model
             
             # Register with ensemble
@@ -192,9 +191,9 @@ class SignaMentis:
         # Initialize LNN model
         try:
             lnn_config = model_config.get('lnn', {})
-            input_size = lnn_config.get('input_size', 50)
+            lnn_input_size = lnn_config.get('input_size', 50)
             
-            lnn_model = create_lnn_model(input_size, lnn_config)
+            lnn_model = create_lnn_model(lnn_input_size, lnn_config)
             self.models['lnn'] = lnn_model
             
             # Register with ensemble
@@ -209,9 +208,9 @@ class SignaMentis:
         # Initialize LTN model
         try:
             ltn_config = model_config.get('ltn', {})
-            input_size = ltn_config.get('input_size', 50)
+            ltn_input_size = ltn_config.get('input_size', 50)
             
-            ltn_model = create_ltn_model(input_size, ltn_config)
+            ltn_model = create_ltn_model(ltn_input_size, ltn_config)
             self.models['ltn'] = ltn_model
             
             # Register with ensemble

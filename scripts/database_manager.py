@@ -824,3 +824,4 @@ if __name__ == "__main__":
     print(f"Database stats: {stats}")
     
     print("Database manager test completed successfully!")
+
