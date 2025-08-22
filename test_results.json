@@ -1,50 +1,42 @@
 {
-  "passed": 5,
-  "failed": 7,
+  "passed": 7,
+  "failed": 5,
   "errors": [
     {
       "test": "Data Loader",
       "error": "Test returned False",
-      "execution_time": 0.6526191234588623
+      "execution_time": 0.6327831745147705
     },
     {
       "test": "Feature Engineering",
       "error": "Test returned False",
-      "execution_time": 0.5684669017791748
+      "execution_time": 0.577139139175415
     },
     {
       "test": "AI Models",
       "error": "Test returned False",
-      "execution_time": 1.165937900543213
+      "execution_time": 1.224236011505127
     },
     {
       "test": "System Integration",
       "error": "Test returned False",
-      "execution_time": 4.9114227294921875e-05
-    },
-    {
-      "test": "Performance",
-      "error": "Test returned False",
-      "execution_time": 0.004398822784423828
+      "execution_time": 0.00016689300537109375
     },
     {
       "test": "Error Handling",
       "error": "Test returned False",
-      "execution_time": 0.00043582916259765625
-    },
-    {
-      "test": "Memory Usage",
-      "error": "Test returned False",
-      "execution_time": 0.009844064712524414
+      "execution_time": 0.0009369850158691406
     }
   ],
   "performance": {
-    "Trading Strategy": 0.002552032470703125,
-    "Risk Management": 0.001580953598022461,
-    "AI Ensemble": 0.0011403560638427734,
-    "Backtester": 0.5892629623413086,
-    "MT5 Connector": 0.010881900787353516
+    "Trading Strategy": 0.0008740425109863281,
+    "Risk Management": 0.0023527145385742188,
+    "AI Ensemble": 0.0014379024505615234,
+    "Backtester": 0.6314032077789307,
+    "MT5 Connector": 0.007907867431640625,
+    "Performance": 0.006660938262939453,
+    "Memory Usage": 0.01386713981628418
   },
-  "start_time": "2025-08-22T12:16:13.747908",
-  "end_time": "2025-08-22T12:16:16.755875"
+  "start_time": "2025-08-22T12:17:31.928517",
+  "end_time": "2025-08-22T12:17:35.029176"
 }
