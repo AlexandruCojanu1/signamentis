@@ -98,7 +98,13 @@ class SignaMentis:
         
         try:
             # Initialize data loader
-            data_config = DataConfig(**self.config.get('data', {}))
+            data_config = DataConfig(
+                symbol=self.config.get('trading_strategy', {}).get('symbol', 'XAUUSD'),
+                timeframe=self.config.get('trading_strategy', {}).get('timeframe', 'M5'),
+                data_source=self.config.get('data', {}).get('sources', {}).get('primary', 'csv'),
+                raw_data_path=self.config.get('data', {}).get('storage', {}).get('raw_data_path', 'data/raw'),
+                processed_data_path=self.config.get('data', {}).get('storage', {}).get('processed_data_path', 'data/processed')
+            )
             self.data_loader = DataLoader(data_config)
             
             # Initialize feature engineer

@@ -91,7 +91,7 @@ class EnsembleAggregator:
         self.models = {}
         self.model_performance = {}
         self.model_weights = {}
-        self.prediction_history = []
+        self.prediction_history = {}
         self.last_weight_update = None
         
         # Performance metrics
