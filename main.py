@@ -35,6 +35,7 @@ from scripts.model_gru import GRUModel, GRUTrainer, create_gru_model
 from scripts.model_transformer import TransformerModel, TransformerTrainer, create_transformer_model
 from scripts.model_lnn import LNNModel, LNNTrainer, create_lnn_model
 from scripts.model_ltn import LTNModel, LTNTrainer, create_ltn_model
+from scripts.model_random_forest import RandomForestModel, RandomForestTrainer, create_random_forest_model
 from scripts.ensemble import EnsembleManager, create_ensemble
 from scripts.risk_manager import RiskManager, create_risk_manager
 
@@ -221,6 +222,23 @@ class SignaMentis:
             
         except Exception as e:
             logger.error(f"Error initializing LTN model: {e}")
+        
+        # Initialize Random Forest model
+        try:
+            random_forest_config = model_config.get('random_forest', {})
+            random_forest_input_size = random_forest_config.get('input_size', 50)
+            
+            random_forest_model = create_random_forest_model(random_forest_input_size, random_forest_config)
+            self.models['random_forest'] = random_forest_model
+            
+            # Register with ensemble
+            if self.ensemble:
+                self.ensemble.register_model('random_forest', random_forest_model, initial_weight=0.15)
+            
+            logger.info("Random Forest model initialized")
+            
+        except Exception as e:
+            logger.error(f"Error initializing Random Forest model: {e}")
         
         logger.info(f"Initialized {len(self.models)} models")
     

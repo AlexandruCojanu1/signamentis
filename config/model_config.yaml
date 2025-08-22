@@ -76,6 +76,24 @@ ltn:
   loss_function: "mse"
   weight_decay: 0.0005
 
+# Random Forest Model Configuration
+random_forest:
+  input_size: 50
+  n_estimators: 150
+  max_depth: 15
+  min_samples_split: 5
+  min_samples_leaf: 2
+  max_features: "sqrt"
+  random_state: 42
+  n_jobs: -1
+  learning_rate: 0.001
+  batch_size: 64
+  epochs: 100
+  early_stopping_patience: 10
+  optimizer: "adam"
+  loss_function: "mse"
+  weight_decay: 0.0001
+
 # Ensemble Configuration
 ensemble:
   method: "weighted_average"  # weighted_average, voting, stacking

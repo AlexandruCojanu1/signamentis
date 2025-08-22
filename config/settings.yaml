@@ -125,8 +125,8 @@ monitoring:
 ai_models:
   ensemble:
     enabled: true
-    models: ["bilstm", "gru", "transformer", "lnn", "ltn"]
-    weights: [0.25, 0.25, 0.25, 0.125, 0.125]
+    models: ["bilstm", "gru", "transformer", "lnn", "ltn", "random_forest"]
+    weights: [0.20, 0.20, 0.20, 0.15, 0.15, 0.10]
     confidence_threshold: 0.7
     update_weights: true
     weight_update_interval: 86400  # daily
