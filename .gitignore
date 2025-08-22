@@ -182,3 +182,22 @@ coverage.xml
 local_config.yaml
 dev_config.yaml
 
+# SignaMentis specific cleanup rules
+# Backtest results (except examples)
+backtest_results_*.json
+test_results.json
+integration_test_results.json
+
+# Data analysis outputs  
+data/new_data_analysis.png
+backtest_results.png
+
+# Processed data files (too large for git)
+data/processed/XAUUSD_*.parquet
+data/processed/XAUUSD_*.csv
+
+# Database files (local dev only)
+data/mcp_agent_manager.db
+data/sentiment_analyzer.db
+data/signamentis.db
+
