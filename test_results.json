@@ -1,0 +1,50 @@
+{
+  "passed": 5,
+  "failed": 7,
+  "errors": [
+    {
+      "test": "Data Loader",
+      "error": "Test returned False",
+      "execution_time": 0.6526191234588623
+    },
+    {
+      "test": "Feature Engineering",
+      "error": "Test returned False",
+      "execution_time": 0.5684669017791748
+    },
+    {
+      "test": "AI Models",
+      "error": "Test returned False",
+      "execution_time": 1.165937900543213
+    },
+    {
+      "test": "System Integration",
+      "error": "Test returned False",
+      "execution_time": 4.9114227294921875e-05
+    },
+    {
+      "test": "Performance",
+      "error": "Test returned False",
+      "execution_time": 0.004398822784423828
+    },
+    {
+      "test": "Error Handling",
+      "error": "Test returned False",
+      "execution_time": 0.00043582916259765625
+    },
+    {
+      "test": "Memory Usage",
+      "error": "Test returned False",
+      "execution_time": 0.009844064712524414
+    }
+  ],
+  "performance": {
+    "Trading Strategy": 0.002552032470703125,
+    "Risk Management": 0.001580953598022461,
+    "AI Ensemble": 0.0011403560638427734,
+    "Backtester": 0.5892629623413086,
+    "MT5 Connector": 0.010881900787353516
+  },
+  "start_time": "2025-08-22T12:16:13.747908",
+  "end_time": "2025-08-22T12:16:16.755875"
+}
