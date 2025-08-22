@@ -52,12 +52,20 @@ class FeatureEngineer:
         self.features_created = []
         self.feature_stats = {}
         
-        # Initialize holiday calendar for major markets
-        self.holiday_calendars = {
-            'US': holidays.US(),
-            'UK': holidays.GB(),
-            'EU': holidays.EU()
-        }
+        # Initialize holiday calendar for major markets (only if available)
+        self.holiday_calendars = {}
+        if HOLIDAYS_AVAILABLE:
+            try:
+                self.holiday_calendars = {
+                    'US': holidays.US(),
+                    'UK': holidays.GB(),
+                    'EU': holidays.EU()
+                }
+            except Exception as e:
+                logger.warning(f"Could not initialize holiday calendars: {e}")
+                self.holiday_calendars = {}
+        else:
+            logger.info("Holidays module not available, skipping holiday features")
         
         logger.info("FeatureEngineer initialized")
     
@@ -96,6 +104,9 @@ class FeatureEngineer:
         
         # 7. Calculate feature statistics
         self._calculate_feature_stats(df_features)
+        
+        # 8. Update features_created list
+        self.features_created = [col for col in df_features.columns if col not in ['open', 'high', 'low', 'close', 'volume']]
         
         logger.info(f"Created {len(self.features_created)} features")
         return df_features
@@ -239,6 +250,10 @@ class FeatureEngineer:
     
     def _add_supertrend(self, df: pd.DataFrame, period: int = 10, multiplier: float = 3.0) -> pd.DataFrame:
         """Add SuperTrend indicator."""
+        # Ensure ATR is calculated first
+        if f'atr_{period}' not in df.columns:
+            df = self._add_atr(df, period)
+        
         atr = df[f'atr_{period}']
         
         # Basic upper and lower bands
@@ -519,16 +534,25 @@ class FeatureEngineer:
     def _add_holiday_indicators(self, df: pd.DataFrame) -> pd.DataFrame:
         """Add holiday indicators for major markets."""
         # US holidays
-        us_holidays = self.holiday_calendars['US']
-        df['us_holiday'] = df.index.date.isin(us_holidays).astype(int)
+        us_holidays = self.holiday_calendars.get('US')
+        if us_holidays:
+            df['us_holiday'] = df.index.date.isin(us_holidays).astype(int)
+        else:
+            df['us_holiday'] = 0
         
         # UK holidays
-        uk_holidays = self.holiday_calendars['UK']
-        df['uk_holiday'] = df.index.date.isin(uk_holidays).astype(int)
+        uk_holidays = self.holiday_calendars.get('UK')
+        if uk_holidays:
+            df['uk_holiday'] = df.index.date.isin(uk_holidays).astype(int)
+        else:
+            df['uk_holiday'] = 0
         
         # EU holidays
-        eu_holidays = self.holiday_calendars['EU']
-        df['eu_holiday'] = df.index.date.isin(eu_holidays).astype(int)
+        eu_holidays = self.holiday_calendars.get('EU')
+        if eu_holidays:
+            df['eu_holiday'] = df.index.date.isin(eu_holidays).astype(int)
+        else:
+            df['eu_holiday'] = 0
         
         # Any holiday
         df['any_holiday'] = (df['us_holiday'] | df['uk_holiday'] | df['eu_holiday']).astype(int)
@@ -622,13 +646,17 @@ class FeatureEngineer:
     
     def _add_volatility_regime(self, df: pd.DataFrame, window: int = 20) -> pd.DataFrame:
         """Add volatility regime detection."""
+        # Ensure ATR is calculated first
+        if f'atr_{window}' not in df.columns:
+            df = self._add_atr(df, window)
+        
         # Volatility regime based on ATR
-        atr_ma = df[f'atr_20'].rolling(window=window).mean()
-        atr_std = df[f'atr_20'].rolling(window=window).std()
+        atr_ma = df[f'atr_{window}'].rolling(window=window).mean()
+        atr_std = df[f'atr_{window}'].rolling(window=window).std()
         
         # Regime classification
-        df['vol_regime'] = np.where(df[f'atr_20'] > atr_ma + atr_std, 'high',
-                                   np.where(df[f'atr_20'] < atr_ma - atr_std, 'low', 'normal'))
+        df['vol_regime'] = np.where(df[f'atr_{window}'] > atr_ma + atr_std, 'high',
+                                   np.where(df[f'atr_{window}'] < atr_ma - atr_std, 'low', 'normal'))
         
         # Regime encoding
         regime_map = {'low': 0, 'normal': 1, 'high': 2}

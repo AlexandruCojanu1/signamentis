@@ -209,20 +209,20 @@ def test_ai_models():
         
         # Create and test model - use correct parameters
         try:
-            model = BiLSTMModel(input_shape=(50, 10), num_classes=2)
+            model = BiLSTMModel(input_size=10, num_classes=2)  # input_size = features
         except TypeError:
             # Try alternative constructor
             try:
-                model = BiLSTMModel(50, 10, 2)  # timesteps, features, classes
+                model = BiLSTMModel(10, 128, 3, 0.2, True, 2)  # input_size, hidden_size, num_layers, dropout, bidirectional, num_classes
             except TypeError:
                 try:
                     # Try with minimal parameters
-                    model = BiLSTMModel()
+                    model = BiLSTMModel(10)  # just input_size
                 except Exception:
                     # Create a mock model
                     class MockBiLSTMModel:
                         def __init__(self):
-                            self.input_shape = (50, 10)
+                            self.input_size = 10
                             self.num_classes = 2
                     model = MockBiLSTMModel()
         
@@ -519,6 +519,69 @@ def test_memory_usage():
         return False
 
 
+def test_mcp_agent_manager():
+    """Test MCP Agent Manager functionality."""
+    try:
+        from mcp_agent_manager import MCPAgentManager, AgentCapability
+        
+        # Create agent manager
+        manager = MCPAgentManager()
+        
+        # Test agent manager initialization
+        if manager is not None:
+            logger.info("MCP Agent Manager created successfully")
+            return True
+        else:
+            logger.warning("MCP Agent Manager creation failed")
+            return False
+            
+    except Exception as e:
+        logger.error(f"MCP Agent Manager test failed: {e}")
+        return False
+
+
+def test_sentiment_analyzer():
+    """Test sentiment analyzer functionality."""
+    try:
+        from sentiment_analyzer import SentimentAnalyzer
+        
+        # Create sentiment analyzer
+        analyzer = SentimentAnalyzer()
+        
+        # Test sentiment analyzer initialization
+        if analyzer is not None:
+            logger.info("Sentiment Analyzer created successfully")
+            return True
+        else:
+            logger.warning("Sentiment Analyzer creation failed")
+            return False
+            
+    except Exception as e:
+        logger.error(f"Sentiment Analyzer test failed: {e}")
+        return False
+
+
+def test_database_manager():
+    """Test database manager functionality."""
+    try:
+        from database_manager import DatabaseManager
+        
+        # Create database manager
+        db_manager = DatabaseManager()
+        
+        # Test database manager initialization
+        if db_manager is not None:
+            logger.info("Database Manager created successfully")
+            return True
+        else:
+            logger.warning("Database Manager creation failed")
+            return False
+            
+    except Exception as e:
+        logger.error(f"Database Manager test failed: {e}")
+        return False
+
+
 def run_comprehensive_test():
     """Run all comprehensive tests."""
     logger.info("🚀 Starting SignaMentis Comprehensive Testing")
@@ -537,7 +600,10 @@ def run_comprehensive_test():
         ("System Integration", test_integration),
         ("Performance", test_performance),
         ("Error Handling", test_error_handling),
-        ("Memory Usage", test_memory_usage)
+        ("Memory Usage", test_memory_usage),
+        ("MCP Agent Manager", test_mcp_agent_manager),
+        ("Sentiment Analyzer", test_sentiment_analyzer),
+        ("Database Manager", test_database_manager)
     ]
     
     for test_name, test_func in tests:

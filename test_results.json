@@ -1,42 +1,24 @@
 {
-  "passed": 7,
-  "failed": 5,
-  "errors": [
-    {
-      "test": "Data Loader",
-      "error": "Test returned False",
-      "execution_time": 4.946103096008301
-    },
-    {
-      "test": "Feature Engineering",
-      "error": "Test returned False",
-      "execution_time": 0.6714348793029785
-    },
-    {
-      "test": "AI Models",
-      "error": "Test returned False",
-      "execution_time": 1.3172507286071777
-    },
-    {
-      "test": "System Integration",
-      "error": "Test returned False",
-      "execution_time": 0.00016808509826660156
-    },
-    {
-      "test": "Error Handling",
-      "error": "Test returned False",
-      "execution_time": 2.0465052127838135
-    }
-  ],
+  "passed": 15,
+  "failed": 0,
+  "errors": [],
   "performance": {
-    "Trading Strategy": 0.0007328987121582031,
-    "Risk Management": 0.0017538070678710938,
-    "AI Ensemble": 0.0014109611511230469,
-    "Backtester": 0.6329751014709473,
-    "MT5 Connector": 0.006429195404052734,
-    "Performance": 0.004528045654296875,
-    "Memory Usage": 0.040532827377319336
+    "Data Loader": 0.5380191802978516,
+    "Feature Engineering": 0.4026377201080322,
+    "AI Models": 0.8088970184326172,
+    "Trading Strategy": 0.0003819465637207031,
+    "Risk Management": 0.00133514404296875,
+    "AI Ensemble": 0.0009260177612304688,
+    "Backtester": 0.47046804428100586,
+    "MT5 Connector": 0.003772258758544922,
+    "System Integration": 0.0038461685180664062,
+    "Performance": 0.0029151439666748047,
+    "Error Handling": 16.18080496788025,
+    "Memory Usage": 0.007229804992675781,
+    "MCP Agent Manager": 0.0015659332275390625,
+    "Sentiment Analyzer": 0.020168781280517578,
+    "Database Manager": 0.0013349056243896484
   },
-  "start_time": "2025-08-22T12:18:37.747137",
-  "end_time": "2025-08-22T12:18:47.418099"
+  "start_time": "2025-08-22T12:43:17.557881",
+  "end_time": "2025-08-22T12:43:36.003129"
 }

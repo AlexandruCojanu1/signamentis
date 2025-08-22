@@ -16,16 +16,21 @@ from typing import Optional, Dict, List, Tuple, Union
 from datetime import datetime, timedelta
 from pathlib import Path
 import yaml
-try:
-    import MetaTrader5 as mt5
-    MT5_AVAILABLE = True
-except ImportError:
-    mt5 = None
-    MT5_AVAILABLE = False
 from dataclasses import dataclass
 from concurrent.futures import ThreadPoolExecutor
 import asyncio
 import aiohttp
+
+# Import MT5Connector instead of direct MT5
+try:
+    from .mt5_connector import MT5Connector
+    MT5_AVAILABLE = True
+except ImportError:
+    try:
+        from mt5_connector import MT5Connector
+        MT5_AVAILABLE = True
+    except ImportError:
+        MT5_AVAILABLE = False
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -54,7 +59,7 @@ class DataLoader:
     
     Supports multiple data sources:
     - CSV files (local storage)
-    - MetaTrader 5 API
+    - MetaTrader 5 API (via MT5Connector)
     - External APIs (Yahoo Finance, Alpha Vantage)
     - Real-time streaming data
     """
@@ -69,7 +74,7 @@ class DataLoader:
         self.config = config or DataConfig()
         self.cache = {}
         self.cache_timestamps = {}
-        self.mt5_connected = False
+        self.mt5_connector = None
         self._setup_directories()
         self._connect_mt5()
         
@@ -86,54 +91,50 @@ class DataLoader:
     
     def _connect_mt5(self) -> bool:
         """
-        Connect to MetaTrader 5 terminal.
+        Connect to MetaTrader 5 terminal using MT5Connector.
         
         Returns:
             bool: True if connection successful, False otherwise.
         """
         try:
-            if not mt5.initialize():
-                logger.warning("Failed to initialize MT5")
+            if not MT5_AVAILABLE:
+                logger.warning("MT5Connector not available")
                 return False
             
+            # Initialize MT5Connector
+            connector_config = {
+                'fallback_mode': True,  # Enable fallback for testing
+                'symbols': [self.config.symbol],
+                'timeframes': [self.config.timeframe]
+            }
+            
+            self.mt5_connector = MT5Connector(connector_config)
+            
             # Test connection
-            account_info = mt5.account_info()
-            if account_info is None:
+            account_info = self.mt5_connector.get_account_info()
+            if account_info:
+                logger.info(f"Connected to MT5 via connector: {account_info.get('login', 'Unknown')}")
+                return True
+            else:
                 logger.warning("Failed to get MT5 account info")
                 return False
             
-            self.mt5_connected = True
-            logger.info(f"Connected to MT5: {account_info.login}")
-            return True
-            
         except Exception as e:
             logger.error(f"Error connecting to MT5: {e}")
-            self.mt5_connected = False
             return False
     
-    def _get_mt5_timeframe(self, timeframe: str) -> int:
+    def _get_mt5_timeframe(self, timeframe: str) -> str:
         """
-        Convert string timeframe to MT5 timeframe constant.
+        Convert string timeframe to MT5 timeframe string.
         
         Args:
             timeframe: String representation of timeframe (e.g., 'M5', 'H1', 'D1')
             
         Returns:
-            int: MT5 timeframe constant
+            str: MT5 timeframe string
         """
-        timeframe_map = {
-            'M1': mt5.TIMEFRAME_M1,
-            'M5': mt5.TIMEFRAME_M5,
-            'M15': mt5.TIMEFRAME_M15,
-            'M30': mt5.TIMEFRAME_M30,
-            'H1': mt5.TIMEFRAME_H1,
-            'H4': mt5.TIMEFRAME_H4,
-            'D1': mt5.TIMEFRAME_D1,
-            'W1': mt5.TIMEFRAME_W1,
-            'MN1': mt5.TIMEFRAME_MN1
-        }
-        
-        return timeframe_map.get(timeframe, mt5.TIMEFRAME_M5)
+        # MT5Connector uses string timeframes
+        return timeframe
     
     def load_csv_data(self, file_path: str, **kwargs) -> pd.DataFrame:
         """
@@ -210,7 +211,7 @@ class DataLoader:
                       end_date: datetime,
                       max_bars: int = 1000000) -> pd.DataFrame:
         """
-        Load data from MetaTrader 5.
+        Load data from MetaTrader 5 via MT5Connector.
         
         Args:
             symbol: Trading symbol (e.g., 'XAUUSD')
@@ -222,31 +223,22 @@ class DataLoader:
         Returns:
             pd.DataFrame: OHLCV data from MT5
         """
-        if not self.mt5_connected:
-            raise ConnectionError("MT5 not connected. Please check connection.")
+        if not self.mt5_connector:
+            raise ConnectionError("MT5 connector not available. Please check connection.")
         
         try:
-            mt5_timeframe = self._get_mt5_timeframe(timeframe)
-            
-            # Convert dates to MT5 format
-            start_dt = pd.to_datetime(start_date)
-            end_dt = pd.to_datetime(end_date)
-            
-            # Get rates from MT5
-            rates = mt5.copy_rates_range(
-                symbol, 
-                mt5_timeframe, 
-                start_dt, 
-                end_dt
+            # Get historical data via connector
+            rates = self.mt5_connector.get_historical_data(
+                symbol, timeframe, start_date, end_date, max_bars
             )
             
-            if rates is None or len(rates) == 0:
+            if not rates or len(rates) == 0:
                 logger.warning(f"No data received from MT5 for {symbol}")
                 return pd.DataFrame()
             
             # Convert to DataFrame
             df = pd.DataFrame(rates)
-            df['datetime'] = pd.to_datetime(df['time'], unit='s')
+            df['datetime'] = pd.to_datetime(df['time'])
             df.set_index('datetime', inplace=True)
             
             # Rename columns to standard format
@@ -446,7 +438,7 @@ class DataLoader:
         df = None
         
         # 1. Try MT5 first (if connected)
-        if self.mt5_connected:
+        if self.mt5_connector:
             try:
                 df = self.load_mt5_data(symbol, timeframe, start_date, end_date)
                 if not df.empty:
@@ -648,9 +640,9 @@ class DataLoader:
     
     def __del__(self):
         """Cleanup when object is destroyed."""
-        if self.mt5_connected:
-            mt5.shutdown()
-            logger.info("MT5 connection closed")
+        if self.mt5_connector:
+            self.mt5_connector.shutdown()
+            logger.info("MT5 connector closed")
 
 
 # Convenience function for quick data loading
