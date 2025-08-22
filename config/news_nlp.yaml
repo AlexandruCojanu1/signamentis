@@ -1,0 +1,276 @@
+# SignaMentis News NLP Service Configuration
+# Author: SignaMentis Team
+# Version: 2.0.0
+
+# Service Configuration
+service:
+  name: "news_nlp"
+  version: "2.0.0"
+  port: 8001
+  host: "0.0.0.0"
+  debug: false
+  log_level: "INFO"
+  
+  # Rate limiting
+  rate_limit: 1000  # requests per hour
+  rate_limit_window: 3600  # seconds
+  
+  # Authentication
+  enable_auth: true
+  api_key: "${NEWS_NLP_API_KEY}"
+  
+  # Performance
+  max_workers: 4
+  timeout: 30
+  enable_caching: true
+  cache_size: 1000
+
+# GDELT Configuration
+gdelt:
+  base_url: "https://api.gdeltproject.org/api/v2"
+  api_key: "${GDELT_API_KEY}"
+  rate_limit: 1000  # requests per hour
+  timeout: 30
+  
+  # Event filtering
+  default_event_types:
+    - "ECONOMIC"
+    - "FINANCIAL"
+    - "MONETARY"
+    - "TRADE"
+  
+  # Query parameters
+  max_records: 100
+  time_window: 24  # hours
+  sort_by: "hybridrel"
+
+# TradingEconomics Configuration
+tradingeconomics:
+  base_url: "https://api.tradingeconomics.com"
+  api_key: "${TRADINGECONOMICS_API_KEY}"
+  rate_limit: 1000  # requests per hour
+  timeout: 30
+  
+  # Data filtering
+  default_countries:
+    - "US"
+    - "EU"
+    - "GB"
+    - "JP"
+    - "CN"
+  
+  # Indicators
+  default_indicators:
+    - "GDP"
+    - "INFLATION"
+    - "INTEREST_RATE"
+    - "UNEMPLOYMENT"
+    - "TRADE_BALANCE"
+
+# NewsAPI Configuration
+newsapi:
+  base_url: "https://newsapi.org/v2"
+  api_key: "${NEWSAPI_API_KEY}"
+  rate_limit: 100  # requests per day (free tier)
+  timeout: 30
+  
+  # News filtering
+  default_categories:
+    - "business"
+    - "technology"
+    - "general"
+  
+  default_languages:
+    - "en"
+  
+  # Search parameters
+  max_page_size: 100
+  default_sort: "publishedAt"
+
+# GNews Configuration
+gnews:
+  base_url: "https://gnews.io/api/v4"
+  api_key: "${GNEWS_API_KEY}"
+  rate_limit: 100  # requests per day (free tier)
+  timeout: 30
+  
+  # News filtering
+  default_categories:
+    - "business"
+    - "technology"
+    - "general"
+  
+  default_languages:
+    - "en"
+  
+  # Search parameters
+  max_articles: 100
+  default_sort: "publishedAt"
+
+# FinBERT Sentiment Analysis Configuration
+finbert:
+  model_name: "ProsusAI/finbert"
+  max_length: 512
+  batch_size: 8
+  device: "auto"  # auto, cpu, cuda
+  
+  # Performance settings
+  enable_caching: true
+  cache_size: 1000
+  enable_batch_processing: true
+  
+  # Model parameters
+  confidence_threshold: 0.6
+  max_text_length: 2048
+  
+  # Preprocessing
+  remove_html: true
+  remove_urls: true
+  normalize_whitespace: true
+
+# Feature Extraction Configuration
+features:
+  # Time windows (hours)
+  sentiment_window: 24
+  volume_window: 6
+  momentum_window: 2
+  
+  # Thresholds
+  urgency_threshold: 0.7
+  relevance_threshold: 0.3
+  sentiment_threshold: 0.5
+  
+  # Weighting for composite score
+  sentiment_weight: 0.4
+  volume_weight: 0.3
+  timing_weight: 0.2
+  source_weight: 0.1
+  
+  # Feature processing
+  enable_sentiment_features: true
+  enable_volume_features: true
+  enable_timing_features: true
+  enable_source_features: true
+  
+  # Caching
+  enable_caching: true
+  cache_size: 1000
+  feature_history_size: 1000
+
+# Data Storage Configuration
+storage:
+  # Cache settings
+  enable_cache: true
+  cache_type: "memory"  # memory, redis
+  
+  # Redis configuration (if using Redis)
+  redis:
+    host: "localhost"
+    port: 6379
+    db: 0
+    password: null
+    ssl: false
+  
+  # Data retention
+  news_cache_ttl: 86400  # 24 hours
+  feature_cache_ttl: 3600  # 1 hour
+  sentiment_cache_ttl: 7200  # 2 hours
+
+# Monitoring Configuration
+monitoring:
+  # Health checks
+  enable_health_checks: true
+  health_check_interval: 60  # seconds
+  
+  # Metrics
+  enable_metrics: true
+  metrics_port: 8002
+  
+  # Logging
+  log_format: "json"
+  log_level: "INFO"
+  enable_file_logging: true
+  log_file: "logs/news_nlp.log"
+  max_log_size: "10MB"
+  log_backup_count: 5
+  
+  # Performance tracking
+  track_request_times: true
+  track_error_rates: true
+  track_cache_hits: true
+
+# Security Configuration
+security:
+  # API security
+  enable_rate_limiting: true
+  enable_api_key_auth: true
+  
+  # CORS
+  cors_origins: ["*"]
+  cors_methods: ["GET", "POST", "PUT", "DELETE"]
+  cors_headers: ["*"]
+  
+  # Request validation
+  max_request_size: "10MB"
+  enable_input_validation: true
+  
+  # SSL/TLS
+  enable_ssl: false
+  ssl_cert_file: null
+  ssl_key_file: null
+
+# Integration Configuration
+integration:
+  # Trading system integration
+  enable_trading_integration: true
+  trading_api_url: "http://localhost:8000"
+  trading_api_key: "${TRADING_API_KEY}"
+  
+  # Risk management integration
+  enable_risk_integration: true
+  risk_api_url: "http://localhost:8003"
+  risk_api_key: "${RISK_API_KEY}"
+  
+  # Database integration
+  enable_database_integration: false
+  database_url: "${DATABASE_URL}"
+  
+  # Message queue integration
+  enable_message_queue: false
+  message_queue_url: "${MESSAGE_QUEUE_URL}"
+
+# Development Configuration
+development:
+  # Debug mode
+  debug: false
+  reload: false
+  
+  # Testing
+  enable_test_mode: false
+  mock_external_apis: false
+  
+  # Development tools
+  enable_swagger: true
+  enable_reload: false
+  enable_debugger: false
+
+# Environment-specific overrides
+environments:
+  development:
+    debug: true
+    log_level: "DEBUG"
+    enable_swagger: true
+    mock_external_apis: true
+  
+  staging:
+    debug: false
+    log_level: "INFO"
+    enable_swagger: true
+    mock_external_apis: false
+  
+  production:
+    debug: false
+    log_level: "WARNING"
+    enable_swagger: false
+    mock_external_apis: false
+    enable_ssl: true

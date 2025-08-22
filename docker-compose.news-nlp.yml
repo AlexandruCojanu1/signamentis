@@ -1,0 +1,185 @@
+# SignaMentis News NLP Service - Docker Compose
+# Author: SignaMentis Team
+# Version: 2.0.0
+
+version: '3.8'
+
+services:
+  # News NLP API Service
+  news-nlp-api:
+    build:
+      context: .
+      dockerfile: services/news_nlp/Dockerfile
+    container_name: signamentis-news-nlp-api
+    ports:
+      - "8001:8001"
+      - "8002:8002"  # Metrics port
+    environment:
+      - ENVIRONMENT=development
+      - LOG_LEVEL=INFO
+      - NEWS_NLP_API_KEY=${NEWS_NLP_API_KEY:-dev_key}
+      - GDELT_API_KEY=${GDELT_API_KEY}
+      - TRADINGECONOMICS_API_KEY=${TRADINGECONOMICS_API_KEY}
+      - NEWSAPI_API_KEY=${NEWSAPI_API_KEY}
+      - GNEWS_API_KEY=${GNEWS_API_KEY}
+      - FINBERT_MODEL_NAME=ProsusAI/finbert
+      - ENABLE_CACHING=true
+      - CACHE_SIZE=1000
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+      - ./models:/app/models
+    networks:
+      - signamentis-network
+    depends_on:
+      - redis
+      - mongodb
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Redis for caching
+  redis:
+    image: redis:7-alpine
+    container_name: signamentis-news-nlp-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - signamentis-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # MongoDB for data storage
+  mongodb:
+    image: mongo:6
+    container_name: signamentis-news-nlp-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD:-password}
+      - MONGO_INITDB_DATABASE=signamentis_news
+    volumes:
+      - mongodb_data:/data/db
+      - ./services/news_nlp/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    networks:
+      - signamentis-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Prometheus for metrics
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: signamentis-news-nlp-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./services/news_nlp/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - signamentis-network
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: signamentis-news-nlp-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./services/news_nlp/grafana/provisioning:/etc/grafana/provisioning:ro
+    networks:
+      - signamentis-network
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # MLflow for experiment tracking
+  mlflow:
+    image: python:3.11-slim
+    container_name: signamentis-news-nlp-mlflow
+    ports:
+      - "5000:5000"
+    environment:
+      - MLFLOW_TRACKING_URI=http://localhost:5000
+      - MLFLOW_DEFAULT_ARTIFACT_ROOT=/mlflow/artifacts
+    volumes:
+      - mlflow_data:/mlflow
+      - ./services/news_nlp/mlflow:/app
+    networks:
+      - signamentis-network
+    restart: unless-stopped
+    working_dir: /app
+    command: >
+      bash -c "pip install mlflow &&
+               mlflow server --host 0.0.0.0 --port 5000
+               --default-artifact-root /mlflow/artifacts
+               --backend-store-uri sqlite:///mlflow.db"
+
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: signamentis-news-nlp-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./services/news_nlp/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./services/news_nlp/ssl:/etc/nginx/ssl:ro
+    networks:
+      - signamentis-network
+    restart: unless-stopped
+    depends_on:
+      - news-nlp-api
+      - grafana
+      - mlflow
+
+volumes:
+  redis_data:
+    driver: local
+  mongodb_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  mlflow_data:
+    driver: local
+
+networks:
+  signamentis-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

@@ -1,0 +1,235 @@
+stages:
+  # Data processing stages
+  load_raw_data:
+    cmd: python scripts/data_loader.py --input data/raw --output data/processed
+    deps:
+      - scripts/data_loader.py
+      - data/raw
+    outs:
+      - data/processed/market_data.parquet
+      - data/processed/news_data.parquet
+    metrics:
+      - metrics/data_quality.json:
+          cache: false
+    plots:
+      - plots/data_distribution.png:
+          cache: false
+          persist: false
+
+  clean_data:
+    cmd: python scripts/data_cleaner.py --input data/processed --output data/cleaned
+    deps:
+      - scripts/data_cleaner.py
+      - data/processed
+    outs:
+      - data/cleaned/market_data_clean.parquet
+      - data/cleaned/news_data_clean.parquet
+    metrics:
+      - metrics/cleaning_report.json:
+          cache: false
+
+  feature_engineering:
+    cmd: python scripts/feature_engineering.py --input data/cleaned --output data/features
+    deps:
+      - scripts/feature_engineering.py
+      - data/cleaned
+    outs:
+      - data/features/technical_indicators.parquet
+      - data/features/market_structure.parquet
+      - data/features/time_features.parquet
+      - data/features/correlation_features.parquet
+    metrics:
+      - metrics/feature_engineering.json:
+          cache: false
+
+  news_nlp_processing:
+    cmd: python services/news_nlp/api.py --process-news --input data/cleaned --output data/features
+    deps:
+      - services/news_nlp/api.py
+      - data/cleaned
+    outs:
+      - data/features/news_sentiment.parquet
+      - data/features/economic_calendar.parquet
+    metrics:
+      - metrics/news_processing.json:
+          cache: false
+
+  # Model training stages
+  train_bilstm:
+    cmd: python scripts/model_bilstm.py --input data/features --output models/bilstm
+    deps:
+      - scripts/model_bilstm.py
+      - data/features
+    outs:
+      - models/bilstm/model.pth
+      - models/bilstm/config.yaml
+    metrics:
+      - metrics/bilstm_performance.json:
+          cache: false
+    plots:
+      - plots/bilstm_training.png:
+          cache: false
+          persist: false
+
+  train_gru:
+    cmd: python scripts/model_gru.py --input data/features --output models/gru
+    deps:
+      - scripts/model_gru.py
+      - data/features
+    outs:
+      - models/gru/model.pth
+      - models/gru/config.yaml
+    metrics:
+      - metrics/gru_performance.json:
+          cache: false
+    plots:
+      - plots/gru_training.png:
+          cache: false
+          persist: false
+
+  train_transformer:
+    cmd: python scripts/model_transformer.py --input data/features --output models/transformer
+    deps:
+      - scripts/model_transformer.py
+      - data/features
+    outs:
+      - models/transformer/model.pth
+      - models/transformer/config.yaml
+    metrics:
+      - metrics/transformer_performance.json:
+          cache: false
+    plots:
+      - plots/transformer_training.png:
+          cache: false
+          persist: false
+
+  train_lnn:
+    cmd: python scripts/model_lnn.py --input data/features --output models/lnn
+    deps:
+      - scripts/model_lnn.py
+      - data/features
+    outs:
+      - models/lnn/model.pth
+      - models/lnn/config.yaml
+    metrics:
+      - metrics/lnn_performance.json:
+          cache: false
+    plots:
+      - plots/lnn_training.png:
+          cache: false
+          persist: false
+
+  train_ltn:
+    cmd: python scripts/model_ltn.py --input data/features --output models/ltn
+    deps:
+      - scripts/model_ltn.py
+      - data/features
+    outs:
+      - models/ltn/model.pth
+      - models/ltn/config.yaml
+    metrics:
+      - metrics/ltn_performance.json:
+          cache: false
+    plots:
+      - plots/ltn_training.png:
+          cache: false
+          persist: false
+
+  # Ensemble training
+  train_ensemble:
+    cmd: python scripts/ensemble.py --input models --output models/ensemble
+    deps:
+      - scripts/ensemble.py
+      - models/bilstm
+      - models/gru
+      - models/transformer
+      - models/lnn
+      - models/ltn
+    outs:
+      - models/ensemble/ensemble_model.pth
+      - models/ensemble/weights.yaml
+    metrics:
+      - metrics/ensemble_performance.json:
+          cache: false
+    plots:
+      - plots/ensemble_performance.png:
+          cache: false
+          persist: false
+
+  # Backtesting stage
+  run_backtest:
+    cmd: python scripts/backtester.py --input data/features --models models/ensemble --output results/backtest
+    deps:
+      - scripts/backtester.py
+      - data/features
+      - models/ensemble
+    outs:
+      - results/backtest/backtest_results.json
+      - results/backtest/trades.csv
+      - results/backtest/equity_curve.csv
+    metrics:
+      - metrics/backtest_performance.json:
+          cache: false
+    plots:
+      - plots/backtest_results.png:
+          cache: false
+          persist: false
+
+  # Risk management optimization
+  optimize_risk:
+    cmd: python mlops/optuna_tuner.py --strategy risk_management --input data/features --output results/risk_optimization
+    deps:
+      - mlops/optuna_tuner.py
+      - data/features
+    outs:
+      - results/risk_optimization/best_params.json
+      - results/risk_optimization/optimization_history.json
+    metrics:
+      - metrics/risk_optimization.json:
+          cache: false
+    plots:
+      - plots/risk_optimization.png:
+          cache: false
+          persist: false
+
+  # Feature store update
+  update_feature_store:
+    cmd: feast apply --repo-path mlops/feast/feature_repo
+    deps:
+      - mlops/feat/feature_repo
+      - data/features
+    outs:
+      - mlops/feast/feature_repo/.feastignore
+    metrics:
+      - metrics/feature_store.json:
+          cache: false
+
+  # Model deployment
+  deploy_models:
+    cmd: python scripts/deploy_models.py --input models --output deployment
+    deps:
+      - scripts/deploy_models.py
+      - models/ensemble
+    outs:
+      - deployment/production_models/
+    metrics:
+      - metrics/deployment.json:
+          cache: false
+
+# Default remote storage configuration
+remote:
+  default:
+    url: s3://signa-mentis-models
+    region: us-east-1
+    profile: default
+
+# Cache configuration
+cache:
+  dir: .dvc/cache
+  type: reflink,symlink,copy
+
+# Default metrics and plots
+metrics:
+  - metrics/
+plots:
+  - plots/

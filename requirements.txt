@@ -1,0 +1,158 @@
+# SignaMentis Trading System - Extended Dependencies
+# Author: SignaMentis Team
+# Version: 2.0.0
+
+# Core ML/AI Dependencies
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+transformers>=4.30.0
+sentencepiece>=0.1.99
+scikit-learn>=1.3.0
+numpy>=1.24.0
+pandas>=2.0.0
+scipy>=1.10.0
+
+# Data Processing & Feature Engineering
+pandas-ta>=0.3.14b
+ta-lib>=0.4.25
+yfinance>=0.2.18
+alpha-vantage>=2.3.1
+
+# Web Framework & API
+fastapi>=0.100.0
+uvicorn[standard]>=0.23.0
+pydantic>=2.0.0
+python-multipart>=0.0.6
+
+# Database & Storage
+pymongo>=4.4.0
+redis>=4.6.0
+sqlalchemy>=2.0.0
+alembic>=1.11.0
+
+# Trading & Execution
+MetaTrader5>=5.0.45
+metaapi-cloud-sdk>=21.0.0
+ccxt>=4.0.0
+finnhub-python>=2.4.18
+
+# Visualization & Monitoring
+plotly>=5.15.0
+dash>=2.11.0
+dash-bootstrap-components>=1.4.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+streamlit>=1.25.0
+
+# Configuration & Environment
+pyyaml>=6.0
+python-dotenv>=1.0.0
+configparser>=5.3.0
+click>=8.1.0
+
+# Testing & Quality Assurance
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-asyncio>=0.21.0
+pytest-mock>=3.11.0
+black>=23.7.0
+isort>=5.12.0
+flake8>=6.0.0
+mypy>=1.5.0
+bandit>=1.7.5
+
+# Logging & Monitoring
+structlog>=23.1.0
+prometheus-client>=0.17.0
+grafana-api>=1.0.3
+
+# Async & Performance
+aiohttp>=3.8.5
+asyncio-mqtt>=0.13.0
+uvloop>=0.17.0
+
+# Development & MLOps
+mlflow>=2.6.0
+dvc[ssh]>=3.20.0
+gitpython>=3.1.31
+feast>=0.36.0
+optuna>=3.2.0
+great-expectations>=0.17.0
+hypothesis>=6.82.0
+
+# Messaging & Communication
+pika>=1.3.0
+celery>=5.3.0
+flower>=2.0.0
+
+# Security & Secrets Management
+hvac>=1.1.0
+cryptography>=41.0.0
+bcrypt>=4.0.0
+
+# Time & Date Handling
+pytz>=2023.3
+python-dateutil>=2.8.2
+holidays>=0.25
+
+# Data Validation & Quality
+marshmallow>=3.20.0
+cerberus>=1.3.5
+jsonschema>=4.19.0
+
+# Network & HTTP
+requests>=2.31.0
+httpx>=0.24.0
+websockets>=11.0.0
+
+# File Processing
+openpyxl>=3.1.0
+xlrd>=2.0.1
+tabula-py>=2.7.0
+
+# News & Sentiment Analysis
+newsapi-python>=0.2.6
+textblob>=0.17.1
+vaderSentiment>=3.3.2
+nltk>=3.8.1
+
+# Financial Data
+quandl>=3.6.0
+fredapi>=0.5.0
+stocks>=1.0.0
+
+# Machine Learning Utilities
+imbalanced-learn>=0.11.0
+shap>=0.42.0
+lime>=0.2.0
+eli5>=0.14.0
+
+# Performance & Profiling
+memory-profiler>=0.61.0
+line-profiler>=4.1.0
+py-spy>=0.3.14
+
+# Documentation
+sphinx>=7.1.0
+sphinx-rtd-theme>=1.3.0
+myst-parser>=1.0.0
+
+# Jupyter & Notebooks
+jupyter>=1.0.0
+jupyterlab>=4.0.0
+ipykernel>=6.25.0
+
+# Docker & Containerization
+docker>=6.1.0
+docker-compose>=1.29.0
+
+# CI/CD
+pre-commit>=3.3.0
+tox>=4.6.0
+
+# Additional Utilities
+tqdm>=4.65.0
+rich>=13.4.0
+click>=8.1.0
+typer>=0.9.0

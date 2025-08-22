@@ -1,0 +1,322 @@
+# SignaMentis Trading System - Main Configuration
+# Author: SignaMentis Team
+# Version: 2.0.0
+
+system:
+  name: "SignaMentis"
+  version: "2.0.0"
+  environment: "production"
+  timezone: "UTC"
+  debug: false
+  log_level: "INFO"
+
+database:
+  host: "localhost"
+  port: 27017
+  database_name: "signa_mentis"
+  username: ""
+  password: ""
+  connection_string: ""
+  max_connections: 100
+  connection_timeout: 30000
+
+# New News & Sentiment Configuration
+news:
+  providers:
+    gdelt:
+      enabled: true
+      api_key: ""
+      base_url: "https://api.gdeltproject.org/api/v2"
+      rate_limit: 1000  # requests per hour
+    tradingeconomics:
+      enabled: true
+      api_key: ""
+      base_url: "https://api.tradingeconomics.com"
+      rate_limit: 1000
+    newsapi:
+      enabled: true
+      api_key: ""
+      base_url: "https://newsapi.org/v2"
+      rate_limit: 1000
+    gnews:
+      enabled: true
+      api_key: ""
+      base_url: "https://gnews.io/api/v4"
+      rate_limit: 1000
+  
+  sentiment:
+    model: "ProsusAI/finbert"
+    model_path: "models/finbert"
+    rolling_windows: [5, 15, 30, 60]  # minutes
+    weights: [0.4, 0.3, 0.2, 0.1]     # corresponding weights
+    threshold: 0.6
+    update_interval: 300  # seconds
+
+calendar:
+  blackout_minutes: 30  # minutes before/after major events
+  trading_sessions:
+    london: "08:00-16:00"
+    new_york: "13:00-21:00"
+    tokyo: "00:00-08:00"
+  holidays:
+    - "2024-01-01"  # New Year
+    - "2024-12-25"  # Christmas
+
+# Enhanced Execution Configuration
+execution:
+  mode: "MT5"  # MT5 or MetaApi
+  mt5:
+    login: 0
+    password: ""
+    server: ""
+    timeout: 60000
+    deviation: 10
+    max_retries: 3
+    retry_delay: 1.0
+  metaapi:
+    account_id: ""
+    token: ""
+    server: "demo"  # demo or live
+    reconnection_policy:
+      max_attempts: 5
+      delay: 1000
+      backoff_multiplier: 2.0
+
+# New Messaging Bus Configuration
+messaging:
+  bus: "redis"  # redis or rabbitmq
+  redis:
+    host: "localhost"
+    port: 6379
+    db: 0
+    password: ""
+    max_connections: 20
+  rabbitmq:
+    host: "localhost"
+    port: 5672
+    username: "guest"
+    password: "guest"
+    virtual_host: "/"
+    max_connections: 10
+
+# Enhanced Monitoring Configuration
+monitoring:
+  prometheus_port: 9090
+  grafana_port: 3000
+  metrics_interval: 60  # seconds
+  health_check_interval: 30  # seconds
+  alert_channels:
+    email:
+      enabled: false
+      smtp_server: ""
+      smtp_port: 587
+      username: ""
+      password: ""
+    telegram:
+      enabled: false
+      bot_token: ""
+      chat_id: ""
+    webhook:
+      enabled: false
+      url: ""
+      headers: {}
+
+# AI Models Configuration
+ai_models:
+  ensemble:
+    enabled: true
+    models: ["bilstm", "gru", "transformer", "lnn", "ltn"]
+    weights: [0.25, 0.25, 0.25, 0.125, 0.125]
+    confidence_threshold: 0.7
+    update_weights: true
+    weight_update_interval: 86400  # daily
+  
+  training:
+    batch_size: 32
+    sequence_length: 100
+    validation_split: 0.2
+    early_stopping_patience: 10
+    learning_rate: 0.001
+    max_epochs: 100
+
+# Risk Management Configuration
+risk_management:
+  max_position_size: 0.5
+  max_daily_loss: 1000.0
+  max_drawdown: 0.1
+  stop_loss_atr_multiplier: 2.0
+  take_profit_atr_multiplier: 3.0
+  confidence_curve:
+    enabled: true
+    bands:
+      - threshold: 0.5
+        risk_multiplier: 0.5
+        sl_multiplier: 1.5
+        tp_multiplier: 0.8
+      - threshold: 0.7
+        risk_multiplier: 1.0
+        sl_multiplier: 1.0
+        tp_multiplier: 1.0
+      - threshold: 0.9
+        risk_multiplier: 1.5
+        sl_multiplier: 0.8
+        tp_multiplier: 1.2
+  
+  news_rules:
+    enable_blackout: true
+    sentiment_shock_threshold: 0.8
+    risk_multiplier_on_shock: 0.3
+
+# Trading Strategy Configuration
+trading_strategy:
+  name: "SuperTrend_Breakout"
+  symbol: "XAUUSD"
+  timeframe: "M5"
+  enabled: true
+  
+  supertrend:
+    period: 10
+    multiplier: 3.0
+  
+  breakout:
+    confirmation_candles: 2
+    volume_threshold: 1.5
+    min_breakout_size: 0.001
+  
+  ai_confirmation:
+    required: true
+    min_confidence: 0.7
+    direction_match: true
+
+# Data Configuration
+data:
+  sources:
+    primary: "csv"
+    backup: "mt5"
+  
+  storage:
+    raw_data_path: "data/raw"
+    processed_data_path: "data/processed"
+    splits_path: "data/splits"
+    max_file_size: "1GB"
+    compression: "gzip"
+  
+  features:
+    technical_indicators: true
+    market_structure: true
+    time_features: true
+    volatility_features: true
+    sentiment_features: true
+
+# Backtesting Configuration
+backtesting:
+  enabled: true
+  start_date: "2023-08-11"
+  end_date: "2023-08-12"
+  initial_balance: 10000.0
+  
+  cross_validation:
+    method: "purged_kfold"
+    n_splits: 5
+    purge: 10
+    embargo: 5
+  
+  costs:
+    spread: 0.5
+    commission: 7.0
+    slippage: 0.1
+  
+  performance_metrics:
+    - "total_return"
+    - "sharpe_ratio"
+    - "max_drawdown"
+    - "win_rate"
+    - "profit_factor"
+    - "calmar_ratio"
+
+# API Configuration
+api:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+  max_requests: 1000
+  timeout: 30
+  
+  authentication:
+    enabled: true
+    method: "api_key"
+    api_key_header: "X-API-Key"
+  
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 100
+    burst_size: 20
+  
+  cors:
+    enabled: true
+    allowed_origins: ["*"]
+    allowed_methods: ["GET", "POST", "PUT", "DELETE"]
+    allowed_headers: ["*"]
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "structured"
+  handlers:
+    console: true
+    file: true
+    json: false
+    network: false
+  
+  rotation:
+    max_file_size: "10MB"
+    backup_count: 5
+    compress: true
+  
+  categories:
+    system: "INFO"
+    trading: "INFO"
+    ai_models: "DEBUG"
+    risk_management: "INFO"
+    execution: "INFO"
+    performance: "INFO"
+    alerts: "WARNING"
+    api: "INFO"
+    database: "WARNING"
+    network: "WARNING"
+
+# Security Configuration
+security:
+  encryption:
+    enabled: true
+    algorithm: "AES-256-GCM"
+    key_rotation_days: 30
+  
+  authentication:
+    jwt_secret: ""
+    jwt_expiry_hours: 24
+    password_min_length: 12
+  
+  network:
+    allowed_ips: ["127.0.0.1", "::1"]
+    ssl_enabled: true
+    ssl_cert_path: ""
+    ssl_key_path: ""
+
+# Performance Configuration
+performance:
+  optimization:
+    use_gpu: true
+    num_threads: 4
+    memory_limit: "8GB"
+  
+  caching:
+    enabled: true
+    backend: "redis"
+    ttl: 3600  # seconds
+    max_size: 1000
+  
+  async:
+    enabled: true
+    max_concurrent: 100
+    timeout: 30

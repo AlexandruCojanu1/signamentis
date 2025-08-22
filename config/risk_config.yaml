@@ -1,0 +1,369 @@
+# SignaMentis Trading System - Risk Management Configuration
+# Author: SignaMentis Team
+# Version: 2.0.0
+
+# Position Sizing Configuration
+position_sizing:
+  method: "risk_based"  # risk_based, kelly_criterion, fixed
+  base_risk_per_trade: 0.02  # 2% of account balance
+  max_position_size: 0.5  # maximum lot size
+  min_position_size: 0.01  # minimum lot size
+  lot_step: 0.01  # lot size increment
+  
+  # Risk-based sizing
+  risk_based:
+    enabled: true
+    max_risk_per_trade: 0.03  # 3% maximum
+    min_risk_per_trade: 0.005  # 0.5% minimum
+    risk_adjustment_factor: 1.0
+  
+  # Kelly Criterion
+  kelly_criterion:
+    enabled: false
+    max_fraction: 0.25  # maximum 25% of account
+    min_fraction: 0.01  # minimum 1% of account
+
+# Stop Loss Configuration
+stop_loss:
+  method: "atr_based"  # atr_based, fixed_pips, percentage
+  atr_multiplier: 2.0
+  fixed_pips: 20
+  percentage: 0.01  # 1%
+  
+  # ATR-based stop loss
+  atr_based:
+    enabled: true
+    period: 14
+    multiplier: 2.0
+    min_distance: 5  # minimum pips
+    max_distance: 100  # maximum pips
+  
+  # Dynamic adjustment
+  dynamic:
+    enabled: true
+    breakeven_after_pips: 10
+    trailing_enabled: true
+    trailing_distance: 5
+
+# Take Profit Configuration
+take_profit:
+  method: "risk_reward"  # risk_reward, fixed_pips, percentage
+  risk_reward_ratio: 2.0
+  fixed_pips: 40
+  percentage: 0.02  # 2%
+  
+  # Risk-reward based
+  risk_reward:
+    enabled: true
+    min_ratio: 1.5
+    max_ratio: 5.0
+    default_ratio: 2.0
+  
+  # Dynamic adjustment
+  dynamic:
+    enabled: true
+    partial_close_enabled: true
+    partial_close_ratio: 0.5  # close 50% at first target
+
+# Daily Risk Limits
+daily_limits:
+  max_daily_loss: 1000.0  # USD
+  max_daily_trades: 20
+  max_daily_volume: 5.0  # total lot size
+  max_consecutive_losses: 5
+  
+  # Loss limits
+  loss_limits:
+    warning_threshold: 0.5  # 50% of max daily loss
+    stop_threshold: 0.8  # 80% of max daily loss
+    circuit_breaker: 1.0  # 100% of max daily loss
+
+# Drawdown Control
+drawdown_control:
+  max_drawdown: 0.1  # 10%
+  max_drawdown_duration: 30  # days
+  
+  # Drawdown levels
+  levels:
+    warning: 0.05  # 5%
+    reduction: 0.07  # 7%
+    stop: 0.1  # 10%
+  
+  # Position reduction
+  position_reduction:
+    enabled: true
+    reduction_factor: 0.5  # reduce position size by 50%
+    max_reductions: 3
+
+# Confidence-Based Risk Adjustment
+confidence_curve:
+  enabled: true
+  
+  # Confidence bands with risk multipliers
+  bands:
+    - threshold: 0.5
+      risk_multiplier: 0.5      # Reduce risk by 50%
+      sl_multiplier: 1.5        # Increase stop loss by 50%
+      tp_multiplier: 0.8        # Reduce take profit by 20%
+      position_multiplier: 0.5  # Reduce position size by 50%
+      description: "Low confidence - conservative"
+    
+    - threshold: 0.7
+      risk_multiplier: 1.0      # Standard risk
+      sl_multiplier: 1.0        # Standard stop loss
+      tp_multiplier: 1.0        # Standard take profit
+      position_multiplier: 1.0  # Standard position size
+      description: "Medium confidence - standard"
+    
+    - threshold: 0.85
+      risk_multiplier: 1.2      # Increase risk by 20%
+      sl_multiplier: 0.8        # Tighten stop loss by 20%
+      tp_multiplier: 1.2        # Increase take profit by 20%
+      position_multiplier: 1.2  # Increase position size by 20%
+      description: "High confidence - aggressive"
+    
+    - threshold: 0.95
+      risk_multiplier: 1.5      # Increase risk by 50%
+      sl_multiplier: 0.7        # Tighten stop loss by 30%
+      tp_multiplier: 1.5        # Increase take profit by 50%
+      position_multiplier: 1.5  # Increase position size by 50%
+      description: "Very high confidence - maximum"
+
+# News-Driven Risk Management
+news_rules:
+  enabled: true
+  
+  # Sentiment shock detection
+  sentiment_shock:
+    threshold: 0.8
+    risk_multiplier: 0.3  # Reduce risk by 70% on shock
+    position_multiplier: 0.3
+    sl_multiplier: 2.0  # Double stop loss distance
+    tp_multiplier: 0.5  # Reduce take profit by 50%
+  
+  # Economic calendar blackout
+  calendar_blackout:
+    enabled: true
+    minutes_before: 30
+    minutes_after: 30
+    risk_multiplier: 0.5
+    position_multiplier: 0.5
+  
+  # News sentiment levels
+  sentiment_levels:
+    very_bearish: -0.8
+    bearish: -0.4
+    neutral: 0.0
+    bullish: 0.4
+    very_bullish: 0.8
+  
+  # Sentiment-based adjustments
+  sentiment_adjustments:
+    very_bearish:
+      risk_multiplier: 0.3
+      position_multiplier: 0.3
+    bearish:
+      risk_multiplier: 0.7
+      position_multiplier: 0.7
+    neutral:
+      risk_multiplier: 1.0
+      position_multiplier: 1.0
+    bullish:
+      risk_multiplier: 1.2
+      position_multiplier: 1.2
+    very_bullish:
+      risk_multiplier: 1.5
+      position_multiplier: 1.5
+
+# Volatility-Based Risk Adjustment
+volatility_adjustment:
+  enabled: true
+  method: "atr_based"  # atr_based, realized_volatility
+  
+  # ATR-based adjustment
+  atr_based:
+    period: 20
+    baseline_atr: 10.0  # baseline ATR value
+    adjustment_factor: 1.0
+  
+  # Volatility bands
+  volatility_bands:
+    low: 0.5    # ATR < 50% of baseline
+    medium: 1.0 # ATR = baseline
+    high: 2.0   # ATR > 200% of baseline
+  
+  # Risk multipliers by volatility
+  risk_multipliers:
+    low_volatility:
+      risk_multiplier: 1.2      # Increase risk in low volatility
+      sl_multiplier: 0.8        # Tighter stops
+      tp_multiplier: 1.2        # Higher targets
+    medium_volatility:
+      risk_multiplier: 1.0      # Standard risk
+      sl_multiplier: 1.0        # Standard stops
+      tp_multiplier: 1.0        # Standard targets
+    high_volatility:
+      risk_multiplier: 0.7      # Reduce risk in high volatility
+      sl_multiplier: 1.5        # Wider stops
+      tp_multiplier: 0.8        # Lower targets
+
+# Market Session Risk Adjustment
+session_adjustment:
+  enabled: true
+  
+  # Session-specific adjustments
+  sessions:
+    london:
+      risk_multiplier: 1.1
+      position_multiplier: 1.1
+      description: "High liquidity session"
+    new_york:
+      risk_multiplier: 1.0
+      position_multiplier: 1.0
+      description: "Standard session"
+    tokyo:
+      risk_multiplier: 0.8
+      position_multiplier: 0.8
+      description: "Lower liquidity session"
+    overlap:
+      risk_multiplier: 1.2
+      position_multiplier: 1.2
+      description: "Session overlap - high liquidity"
+    off_hours:
+      risk_multiplier: 0.5
+      position_multiplier: 0.5
+      description: "Off-hours - low liquidity"
+
+# Correlation Risk Management
+correlation_management:
+  enabled: true
+  
+  # Maximum correlated positions
+  max_correlated_positions: 2
+  correlation_threshold: 0.7
+  
+  # Correlation-based adjustments
+  adjustments:
+    high_correlation:
+      risk_multiplier: 0.7
+      position_multiplier: 0.7
+    medium_correlation:
+      risk_multiplier: 0.85
+      position_multiplier: 0.85
+    low_correlation:
+      risk_multiplier: 1.0
+      position_multiplier: 1.0
+
+# Time-Based Risk Adjustment
+time_adjustment:
+  enabled: true
+  
+  # Day of week adjustments
+  day_adjustments:
+    monday:
+      risk_multiplier: 0.8
+      description: "Monday - cautious start"
+    tuesday:
+      risk_multiplier: 1.0
+      description: "Tuesday - standard"
+    wednesday:
+      risk_multiplier: 1.1
+      description: "Wednesday - mid-week momentum"
+    thursday:
+      risk_multiplier: 1.0
+      description: "Thursday - standard"
+    friday:
+      risk_multiplier: 0.9
+      description: "Friday - weekend caution"
+  
+  # Month adjustments
+  month_adjustments:
+    january: 0.9    # New year caution
+    february: 1.0   # Standard
+    march: 1.0      # Standard
+    april: 1.0      # Standard
+    may: 1.0        # Standard
+    june: 1.0       # Standard
+    july: 0.9       # Summer caution
+    august: 0.8     # Summer vacation
+    september: 1.0  # Standard
+    october: 1.1    # Volatility season
+    november: 1.0   # Standard
+    december: 0.9   # Holiday season
+
+# Performance-Based Risk Adjustment
+performance_adjustment:
+  enabled: true
+  
+  # Win rate adjustments
+  win_rate_adjustments:
+    low: 0.4        # Win rate < 40%
+      risk_multiplier: 0.5
+      position_multiplier: 0.5
+    medium: 0.6     # Win rate 40-60%
+      risk_multiplier: 0.8
+      position_multiplier: 0.8
+    high: 0.8       # Win rate > 80%
+      risk_multiplier: 1.2
+      position_multiplier: 1.2
+  
+  # Drawdown adjustments
+  drawdown_adjustments:
+    low: 0.05       # Drawdown < 5%
+      risk_multiplier: 1.1
+      position_multiplier: 1.1
+    medium: 0.1     # Drawdown 5-10%
+      risk_multiplier: 0.8
+      position_multiplier: 0.8
+    high: 0.15      # Drawdown > 15%
+      risk_multiplier: 0.5
+      position_multiplier: 0.5
+
+# Emergency Risk Controls
+emergency_controls:
+  enabled: true
+  
+  # Circuit breakers
+  circuit_breakers:
+    daily_loss_breach: true
+    drawdown_breach: true
+    consecutive_losses_breach: true
+    volatility_spike: true
+  
+  # Emergency actions
+  emergency_actions:
+    close_all_positions: false
+    reduce_position_sizes: true
+    increase_stop_losses: true
+    suspend_new_trades: true
+  
+  # Recovery conditions
+  recovery_conditions:
+    min_wait_time: 3600  # 1 hour
+    required_win_rate: 0.6
+    max_drawdown: 0.05
+
+# Risk Monitoring & Alerts
+monitoring:
+  enabled: true
+  
+  # Real-time monitoring
+  real_time:
+    position_monitoring: true
+    risk_exposure_monitoring: true
+    correlation_monitoring: true
+    performance_monitoring: true
+  
+  # Alert thresholds
+  alerts:
+    risk_exposure: 0.8      # Alert at 80% risk exposure
+    drawdown: 0.05          # Alert at 5% drawdown
+    consecutive_losses: 3   # Alert after 3 consecutive losses
+    low_confidence: 0.6     # Alert at low confidence
+  
+  # Reporting
+  reporting:
+    daily_summary: true
+    weekly_analysis: true
+    monthly_review: true
+    risk_adjustment_log: true

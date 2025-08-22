@@ -1,0 +1,12 @@
+project: signa_mentis
+provider: local
+online_store:
+    type: redis
+    connection_string: redis://localhost:6379
+offline_store:
+    type: file
+    path: data/feature_store
+registry:
+    type: file
+    path: data/feature_store/registry.db
+repo_path: mlops/feast/feature_repo
