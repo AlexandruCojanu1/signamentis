@@ -790,7 +790,10 @@ def create_lnn_model(input_size: int, config: Optional[Dict] = None) -> LNNModel
     }
     
     if config:
-        default_config.update(config)
+        # Filter only model-specific parameters
+        model_params = ['hidden_size', 'num_layers', 'dropout', 'alpha', 'num_classes']
+        filtered_config = {k: v for k, v in config.items() if k in model_params}
+        default_config.update(filtered_config)
     
     return LNNModel(input_size=input_size, **default_config)
 

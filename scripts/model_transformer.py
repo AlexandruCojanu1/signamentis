@@ -753,7 +753,10 @@ def create_transformer_model(input_size: int, config: Optional[Dict] = None) -> 
     }
     
     if config:
-        default_config.update(config)
+        # Filter only model-specific parameters
+        model_params = ['d_model', 'nhead', 'num_layers', 'dim_feedforward', 'dropout', 'max_seq_length', 'num_classes']
+        filtered_config = {k: v for k, v in config.items() if k in model_params}
+        default_config.update(filtered_config)
     
     return TransformerModel(input_size=input_size, **default_config)
 

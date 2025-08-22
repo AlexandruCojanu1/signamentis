@@ -835,7 +835,10 @@ def create_ltn_model(input_size: int, config: Optional[Dict] = None) -> LTNModel
     }
     
     if config:
-        default_config.update(config)
+        # Filter only model-specific parameters
+        model_params = ['hidden_size', 'num_layers', 'num_rules', 'dropout', 'num_classes']
+        filtered_config = {k: v for k, v in config.items() if k in model_params}
+        default_config.update(filtered_config)
     
     return LTNModel(input_size=input_size, **default_config)
 

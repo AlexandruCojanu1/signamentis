@@ -683,7 +683,10 @@ def create_gru_model(input_size: int, config: Optional[Dict] = None) -> GRUModel
     }
     
     if config:
-        default_config.update(config)
+        # Filter only model-specific parameters
+        model_params = ['hidden_size', 'num_layers', 'dropout', 'bidirectional', 'num_classes']
+        filtered_config = {k: v for k, v in config.items() if k in model_params}
+        default_config.update(filtered_config)
     
     return GRUModel(input_size=input_size, **default_config)
 
