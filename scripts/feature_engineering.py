@@ -17,7 +17,12 @@ import pandas as pd
 from typing import Dict, List, Tuple, Optional, Union
 import logging
 from datetime import datetime, timedelta
-import holidays
+try:
+    import holidays
+    HOLIDAYS_AVAILABLE = True
+except ImportError:
+    holidays = None
+    HOLIDAYS_AVAILABLE = False
 from scipy import stats
 from scipy.signal import find_peaks
 import warnings

@@ -16,7 +16,12 @@ from typing import Optional, Dict, List, Tuple, Union
 from datetime import datetime, timedelta
 from pathlib import Path
 import yaml
-import MetaTrader5 as mt5
+try:
+    import MetaTrader5 as mt5
+    MT5_AVAILABLE = True
+except ImportError:
+    mt5 = None
+    MT5_AVAILABLE = False
 from dataclasses import dataclass
 from concurrent.futures import ThreadPoolExecutor
 import asyncio

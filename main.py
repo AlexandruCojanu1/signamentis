@@ -20,6 +20,7 @@ import logging
 import argparse
 import yaml
 import asyncio
+import pandas as pd
 from pathlib import Path
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
@@ -28,15 +29,15 @@ from typing import Dict, List, Optional
 sys.path.append(str(Path(__file__).parent / "scripts"))
 
 # Import SignaMentis components
-from data_loader import DataLoader, DataConfig
-from feature_engineering import FeatureEngineer
-from model_bilstm import BiLSTMModel, BiLSTMTrainer, create_bilstm_model
-from model_gru import GRUModel, GRUTrainer, create_gru_model
-from model_transformer import TransformerModel, TransformerTrainer, create_transformer_model
-from model_lnn import LNNModel, LNNTrainer, create_lnn_model
-from model_ltn import LTNModel, LTNTrainer, create_ltn_model
-from ensemble import EnsembleManager, create_ensemble
-from risk_manager import RiskManager, create_risk_manager
+from scripts.data_loader import DataLoader, DataConfig
+from scripts.feature_engineering import FeatureEngineer
+from scripts.model_bilstm import BiLSTMModel, BiLSTMTrainer, create_bilstm_model
+from scripts.model_gru import GRUModel, GRUTrainer, create_gru_model
+from scripts.model_transformer import TransformerModel, TransformerTrainer, create_transformer_model
+from scripts.model_lnn import LNNModel, LNNTrainer, create_lnn_model
+from scripts.model_ltn import LTNModel, LTNTrainer, create_ltn_model
+from scripts.ensemble import EnsembleManager, create_ensemble
+from scripts.risk_manager import RiskManager, create_risk_manager
 
 # Configure logging
 logging.basicConfig(
@@ -707,11 +708,22 @@ def main():
             print("Press Ctrl+C to stop")
             
             # Run live trading
-            asyncio.run(argo.start_live_trading())
+            asyncio.run(signa.start_live_trading())
         
         # Get system status
         status = signa.get_system_status()
         print(f"\nSystem Status: {status}")
+        
+        # Save results if backtest mode
+        if args.mode == 'backtest' and results:
+            results_file = f"backtest_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+            try:
+                with open(results_file, 'w') as f:
+                    import json
+                    json.dump(results, f, indent=2, default=str)
+                print(f"💾 Results saved to {results_file}")
+            except Exception as e:
+                print(f"⚠️  Could not save results: {e}")
         
     except KeyboardInterrupt:
         logger.info("System stopped by user")

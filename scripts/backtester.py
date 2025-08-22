@@ -285,28 +285,32 @@ class Backtester:
         self.trade_history = []
         
         # Initialize strategy
-        strategy.current_positions = []
-        strategy.trades = []
+        self.strategy = strategy
+        self.strategy.current_positions = []
+        self.strategy.trades = []
         
         # Process each bar
         for i in range(100, len(data)):  # Start from 100 to have enough history
             current_bar = data.iloc[i]
             current_data = data.iloc[:i+1]
             
+            # Store current data for equity curve updates
+            self._current_data = current_data
+            
             # Update existing positions
-            strategy.update_positions(current_bar['close'], current_bar.name)
+            self.strategy.update_positions(current_bar['close'], current_bar.name)
             
             # Check for new signals
-            breakout_signal = strategy.detect_breakout(current_data, i)
+            breakout_signal = self.strategy.detect_breakout(current_data, i)
             
             if breakout_signal:
                 # Get AI prediction
                 ai_prediction = self._get_ai_prediction(ai_ensemble, current_data, i)
                 
                 # Validate signal
-                if strategy.validate_signal(breakout_signal, ai_prediction, current_data):
+                if self.strategy.validate_signal(breakout_signal, ai_prediction, current_data):
                     # Generate trade plan
-                    trade_plan = strategy.generate_trade_plan(
+                    trade_plan = self.strategy.generate_trade_plan(
                         breakout_signal, ai_prediction, risk_manager
                     )
                     
@@ -431,7 +435,7 @@ class Backtester:
             }
             
             # Add to strategy positions
-            strategy.current_positions.append(position)
+            self.strategy.current_positions.append(position)
             
             # Record trade
             trade_record = {
@@ -479,17 +483,41 @@ class Backtester:
             # Calculate current portfolio value
             portfolio_value = self.current_capital
             
-            for position in strategy.current_positions:
-                if position['status'] == 'open':
-                    # Calculate unrealized P&L
-                    current_price = data.loc[timestamp, 'close']
-                    
-                    if position['signal'] == 'BUY':
-                        unrealized_pnl = (current_price - position['entry_price']) * position['lot_size'] * 100000
-                    else:  # SELL
-                        unrealized_pnl = (position['entry_price'] - current_price) * position['lot_size'] * 100000
-                    
-                    portfolio_value += unrealized_pnl
+            # Get current data for this timestamp
+            current_data = None
+            try:
+                # Try to find data for this timestamp
+                if hasattr(self, '_current_data') and self._current_data is not None:
+                    current_data = self._current_data
+                else:
+                    # Fallback to last known price
+                    portfolio_value = self.current_capital
+                    self.equity_curve.append(portfolio_value)
+                    return
+            except Exception:
+                # If we can't get current data, just use current capital
+                portfolio_value = self.current_capital
+                self.equity_curve.append(portfolio_value)
+                return
+            
+            # Calculate unrealized P&L for open positions
+            if hasattr(self, 'strategy') and hasattr(self.strategy, 'current_positions'):
+                for position in self.strategy.current_positions:
+                    if position.get('status') == 'open':
+                        try:
+                            # Get current price from data
+                            if current_data is not None and len(current_data) > 0:
+                                current_price = current_data.iloc[-1]['close']
+                                
+                                if position['signal'] == 'BUY':
+                                    unrealized_pnl = (current_price - position['entry_price']) * position['lot_size'] * 100000
+                                else: # SELL
+                                    unrealized_pnl = (position['entry_price'] - current_price) * position['lot_size'] * 100000
+                                
+                                portfolio_value += unrealized_pnl
+                        except Exception as e:
+                            logger.debug(f"Could not calculate P&L for position: {e}")
+                            continue
             
             # Update peak capital and drawdown
             if portfolio_value > self.peak_capital:
@@ -504,6 +532,8 @@ class Backtester:
             
         except Exception as e:
             logger.error(f"Error updating equity curve: {e}")
+            # Fallback: just add current capital
+            self.equity_curve.append(self.current_capital)
     
     def _calculate_performance_metrics(self) -> BacktestResult:
         """
