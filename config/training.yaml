@@ -1,0 +1,166 @@
+# SignaMentis AI Trading System - Training Configuration
+# Multi-module ensemble training with high-confidence requirements
+
+general:
+  seed: 42
+  n_jobs: 4  # Safe parallelism for M1 Pro
+  horizon_bars: 6  # ~30 minutes for M5 predictions
+  random_state: 42
+
+data:
+  features_csv: "data/processed/multi_timeframe_features_3years_20250823_104329.csv"
+  timestamp_col: "timestamp"
+  required_features:
+    - "current_close"
+    - "current_high" 
+    - "current_low"
+    - "current_open"
+    - "m5_atr"
+    - "m5_supertrend"
+    - "m5_sma_20"
+    - "m5_ema_20"
+    - "m5_rsi"
+    - "m5_bb_upper"
+    - "m5_bb_lower"
+    - "m5_macd"
+    - "m15_atr"
+    - "m15_supertrend"
+    - "m15_sma_20"
+    - "m15_ema_20"
+    - "m15_rsi"
+    - "m15_bb_upper"
+    - "m15_bb_lower"
+    - "m15_macd"
+
+splits:
+  train_end: "2024-06-01T00:00:00Z"
+  val_end: "2025-02-01T00:00:00Z"
+  test_end: "2025-08-16T23:45:00Z"
+
+targets:
+  horizon_bars: 6
+  price_levels_atr: [0.5, 1.0, 1.5]
+  strength_thresholds:
+    weak: 0.5
+    medium: 1.5
+  duration_bins: [2, 6, 12]  # [0-2, 3-6, 7-12, not_reached]
+
+direction:
+  targets:
+    - "target_direction_1"
+    - "target_direction_3"
+    - "target_direction_5"
+  algorithm: "lightgbm"  # Preferred: lightgbm, xgboost, rf, logreg
+  class_weight: "balanced_subsample"
+  early_stopping_rounds: 100
+  cv_folds: 5
+  optuna_timeout_sec: 3600
+  min_precision_val: 0.97  # Quality gate: ≥97% precision on high-confidence
+  min_recall_val: 0.25     # Quality gate: ≥25% recall on high-confidence
+  hyperparameters:
+    n_estimators: [100, 200, 300]
+    max_depth: [5, 10, 15, null]
+    learning_rate: [0.01, 0.05, 0.1]
+    num_leaves: [31, 63, 127]
+    min_child_samples: [20, 50, 100]
+    subsample: [0.8, 0.9, 1.0]
+    colsample_bytree: [0.8, 0.9, 1.0]
+    reg_alpha: [0, 0.1, 0.5]
+    reg_lambda: [0, 0.1, 0.5]
+
+strength_duration:
+  strength_classes: ["weak", "medium", "strong"]
+  duration_bins: ["0-2", "3-6", "7-12", "not_reached"]
+  algorithm: "lightgbm"
+  class_weight: "balanced"
+  early_stopping_rounds: 100
+  cv_folds: 5
+  min_macro_f1: 0.60
+  hyperparameters:
+    n_estimators: [100, 200]
+    max_depth: [5, 10, 15]
+    learning_rate: [0.05, 0.1]
+    num_leaves: [31, 63]
+    min_child_samples: [20, 50]
+
+price_targets:
+  quantiles: [0.1, 0.5, 0.9]
+  algorithm: "lightgbm"
+  objectives:
+    - "quantile"
+    - "quantile"
+    - "quantile"
+  quantile_alphas: [0.1, 0.5, 0.9]
+  early_stopping_rounds: 100
+  cv_folds: 5
+  min_brier_score: 0.25
+  hyperparameters:
+    n_estimators: [200, 300]
+    max_depth: [6, 10]
+    learning_rate: [0.05, 0.1]
+    num_leaves: [31, 63]
+    min_child_samples: [20, 50]
+
+orchestrator:
+  algorithm: "lightgbm"  # or "logistic"
+  min_precision_val: 0.97  # Overall pipeline quality gate
+  min_recall_val: 0.25
+  cv_folds: 5
+  hyperparameters:
+    n_estimators: 200
+    learning_rate: 0.05
+    max_depth: 6
+    num_leaves: 31
+    min_child_samples: 20
+  risk_management:
+    max_position_size: 0.1  # 10% of portfolio
+    stop_loss_atr: 2.0      # 2 ATR stop loss
+    take_profit_atr: 3.0    # 3 ATR take profit
+    max_drawdown: 0.05      # 5% max drawdown
+
+output:
+  models_dir: "models"
+  results_dir: "results"
+  run_name: null  # Auto-generated timestamp
+  save_artifacts:
+    models: true
+    scalers: true
+    metadata: true
+    calibration_data: true
+    feature_importance: true
+    confusion_matrices: true
+    calibration_plots: true
+    summary_reports: true
+
+evaluation:
+  metrics:
+    classification:
+      - "accuracy"
+      - "precision"
+      - "recall"
+      - "f1"
+      - "roc_auc"
+      - "calibration_error"
+    regression:
+      - "mae"
+      - "mse"
+      - "rmse"
+      - "r2"
+      - "pinball_loss"
+  thresholds:
+    high_confidence_precision: 0.97
+    min_recall: 0.25
+    min_coverage: 0.10
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: null  # Log to console by default
+  console: true
+
+# Resource management for M1 Pro
+resources:
+  max_memory_gb: 24  # Leave 8GB for system
+  max_cpu_percent: 80
+  chunk_size: 10000  # Process data in chunks
+  early_stopping_patience: 3
