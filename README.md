@@ -1,8 +1,8 @@
 # SignaMentis - AI-Powered Trading System 🚀
 
-**Production Ready - Core Implementation Complete**
+**Crypto-focused - SOL/USDT 15m**
 
-SignaMentis is a comprehensive, AI-powered trading system designed for XAU/USD (Gold) trading with advanced machine learning models, real-time risk management, and automated execution capabilities.
+SignaMentis is a comprehensive, AI-powered trading system now focused on crypto, using SOL/USDT 15-minute OHLCV data from Binance.
 
 ## ✨ Features
 
@@ -52,6 +52,12 @@ signa mentis/
 git clone https://github.com/AlexandruCojanu1/signamentis.git
 cd signamentis
 pip install -r requirements.txt
+```
+
+### Data Download (Binance Vision)
+```bash
+# Download SOLUSDT 15m klines and save CSV
+python scripts/binance_downloader.py --start 2023-01-01 --end 2025-08-31 --out data/processed/solusdt_15m.csv
 ```
 
 ### Training Pipeline
@@ -156,4 +162,8 @@ For questions or issues, please contact the development team.
 
 ---
 
+**References**
+- Binance Public Data: [binance/binance-public-data](https://github.com/binance/binance-public-data.git)
+
 **SignaMentis** - Where AI meets precision trading 🎯
+

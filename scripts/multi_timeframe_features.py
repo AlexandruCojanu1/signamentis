@@ -88,6 +88,15 @@ class MultiTimeframeFeatureEngineer:
         # Load data
         m5_data = pd.read_csv(m5_file)
         m15_data = pd.read_csv(m15_file)
+
+        # Normalize expected columns to crypto schema (OHLCV)
+        for df in (m5_data, m15_data):
+            # unify column names if coming from Binance downloader
+            rename_map = {
+                'Open': 'open', 'High': 'high', 'Low': 'low', 'Close': 'close', 'Volume': 'volume',
+                'Open time': 'timestamp', 'open_time': 'timestamp'
+            }
+            df.rename(columns=rename_map, inplace=True)
         
         # Ensure timestamp columns are datetime and timezone-aware
         m5_data['timestamp'] = pd.to_datetime(m5_data['timestamp'], format='mixed', utc=True)
@@ -141,10 +150,15 @@ class MultiTimeframeFeatureEngineer:
         features['m5_volume_trend'] = np.corrcoef(range(len(m5_subset)), m5_subset['volume'])[0, 1] if len(m5_subset) > 1 else 0
         features['m5_volume_avg'] = m5_subset['volume'].mean()
         
-        # Spread analysis
-        features['m5_spread_avg'] = m5_subset['spread'].mean()
-        features['m5_spread_volatility'] = m5_subset['spread'].std()
-        features['m5_spread_trend'] = np.corrcoef(range(len(m5_subset)), m5_subset['spread'])[0, 1] if len(m5_subset) > 1 and m5_subset['spread'].std() > 0 else 0
+        # Spread analysis (optional: crypto may not provide spread)
+        if 'spread' in m5_subset.columns:
+            features['m5_spread_avg'] = m5_subset['spread'].mean()
+            features['m5_spread_volatility'] = m5_subset['spread'].std()
+            features['m5_spread_trend'] = np.corrcoef(range(len(m5_subset)), m5_subset['spread'])[0, 1] if len(m5_subset) > 1 and m5_subset['spread'].std() > 0 else 0
+        else:
+            features['m5_spread_avg'] = 0
+            features['m5_spread_volatility'] = 0
+            features['m5_spread_trend'] = 0
         
         # Support/Resistance levels
         recent_highs = m5_subset['high'].tail(6)
