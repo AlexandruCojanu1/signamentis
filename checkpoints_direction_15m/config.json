@@ -1,0 +1,36 @@
+{
+  "years": 3,
+  "k": 0.25,
+  "val_ratio": 0.2,
+  "seq_len": 128,
+  "volatility_window": 48,
+  "ema_periods": [
+    20,
+    50,
+    200
+  ],
+  "rsi_period": 14,
+  "macd_params": [
+    12,
+    26,
+    9
+  ],
+  "atr_period": 14,
+  "d_model": 128,
+  "num_layers": 2,
+  "nhead": 4,
+  "lstm_hidden": 128,
+  "dropout": 0.1,
+  "n_classes": 3,
+  "epochs": 3,
+  "batch_size": 256,
+  "lr": 0.0002,
+  "weight_decay": 0.0001,
+  "patience": 8,
+  "label_smoothing": 0.05,
+  "mixed_precision": "auto",
+  "seed": 42,
+  "save_dir": "./checkpoints_direction_15m",
+  "resume": false,
+  "fast_dev_run": true
+}
