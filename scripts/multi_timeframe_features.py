@@ -427,6 +427,68 @@ class MultiTimeframeFeatureEngineer:
                 for feature in technical_features:
                     if feature in latest_m5:
                         features[f'current_{feature}'] = latest_m5[feature]
+
+            # Add new volume-related rolling features from M15 window
+            if len(m15_subset) >= 20:
+                vol = m15_subset['volume']
+                vol_mean20 = vol.tail(20).mean()
+                vol_std20 = vol.tail(20).std(ddof=0)
+                last_vol = vol.iloc[-1]
+                # z-score and momentum of volume
+                features['zscore_volume'] = (last_vol - vol_mean20) / vol_std20 if vol_std20 and vol_std20 > 0 else 0
+                features['momentum_volume'] = last_vol / vol_mean20 if vol_mean20 and vol_mean20 > 0 else 1
+                features['vol_of_vol'] = vol_std20 if vol_std20 == vol_std20 else 0
+                # Rolling VWAP over 20 bars and distance
+                pv = (m15_subset['close'] * m15_subset['volume']).tail(20).sum()
+                vwap20 = pv / (m15_subset['volume'].tail(20).sum() or 1)
+                features['vwap_distance'] = m15_subset['close'].iloc[-1] - vwap20
+                # Rolling correlation between |return| and volume over 20 bars
+                ret_abs20 = m15_subset['close'].pct_change().abs().tail(20)
+                vol20 = vol.tail(20)
+                if ret_abs20.std(ddof=0) > 0 and vol20.std(ddof=0) > 0 and len(ret_abs20) == len(vol20) and len(ret_abs20) >= 2:
+                    features['corr_ret_vol'] = ret_abs20.corr(vol20)
+                else:
+                    features['corr_ret_vol'] = 0
+                # Volume RSI(14)
+                vol_chg = vol.diff()
+                gain = vol_chg.clip(lower=0)
+                loss = (-vol_chg.clip(upper=0))
+                avg_gain = gain.rolling(14, min_periods=14).mean()
+                avg_loss = loss.rolling(14, min_periods=14).mean()
+                rs = (avg_gain / (avg_loss.replace(0, np.nan))).iloc[-1]
+                if pd.notna(rs) and np.isfinite(rs):
+                    features['volume_rsi'] = 100 - (100 / (1 + rs))
+                else:
+                    features['volume_rsi'] = 50
+                # Rolling entropy of abs returns over 20 bars
+                ret_abs_20 = m15_subset['close'].pct_change().abs().tail(20).dropna()
+                if len(ret_abs_20) >= 5:
+                    hist, _ = np.histogram(ret_abs_20.values, bins=10, range=(ret_abs_20.min(), ret_abs_20.max() if ret_abs_20.max() > ret_abs_20.min() else ret_abs_20.min() + 1e-9), density=True)
+                    p = hist / (hist.sum() if hist.sum() > 0 else 1)
+                    p = p[p > 0]
+                    entropy = float(-(p * np.log(p + 1e-12)).sum())
+                    features['rolling_entropy_ret'] = entropy
+                else:
+                    features['rolling_entropy_ret'] = 0
+                # Price-volume trend divergence over 20 bars: slope(price) - slope(volume)
+                close20 = m15_subset['close'].tail(20).values
+                vol20_arr = vol.tail(20).values
+                x = np.arange(len(close20))
+                try:
+                    slope_price = float(np.polyfit(x, close20, 1)[0]) if len(x) > 1 else 0
+                    slope_vol = float(np.polyfit(x, vol20_arr, 1)[0]) if len(x) > 1 else 0
+                    features['vp_trend_div'] = slope_price - slope_vol
+                except Exception:
+                    features['vp_trend_div'] = 0
+            else:
+                features['zscore_volume'] = 0
+                features['momentum_volume'] = 1
+                features['vol_of_vol'] = 0
+                features['vwap_distance'] = 0
+                features['corr_ret_vol'] = 0
+                features['volume_rsi'] = 50
+                features['rolling_entropy_ret'] = 0
+                features['vp_trend_div'] = 0
             
             features_list.append(features)
         

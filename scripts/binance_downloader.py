@@ -43,9 +43,14 @@ def download_month(symbol: str, interval: str, year: int, month: int) -> pd.Data
         'quote_asset_volume', 'number_of_trades', 'taker_buy_base_asset_volume',
         'taker_buy_quote_asset_volume', 'ignore'
     ]
-    # Convert to desired schema
+    # Convert to desired schema (force milliseconds): handle Binance 2025+ microseconds by downscaling
+    open_time = df['open_time'].astype('int64')
+    # If timestamps look like microseconds (> 1e14), convert to milliseconds
+    if int(open_time.max()) > 10**14:
+        open_time = (open_time // 1000).astype('int64')
+    unit = 'ms'
     df_out = pd.DataFrame({
-        'timestamp': pd.to_datetime(df['open_time'], unit='ms', utc=True),
+        'timestamp': pd.to_datetime(open_time, unit=unit, utc=True),
         'open': df['open'].astype(float),
         'high': df['high'].astype(float),
         'low': df['low'].astype(float),

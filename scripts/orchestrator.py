@@ -468,23 +468,29 @@ class Orchestrator:
         logger.info(f"Evaluating orchestrator on {split_name} set...")
         
         # Get predictions
+        X_scaled = self.scaler.transform(X)
         if self.calibrator is not None:
-            X_scaled = self.scaler.transform(X)
             predictions = self.calibrator.predict(X_scaled)
-            confidence_scores = self.calibrator.predict_proba(X_scaled)[:, 1]
+            proba = self.calibrator.predict_proba(X_scaled)
         else:
-            X_scaled = self.scaler.transform(X)
             predictions = self.model.predict(X_scaled)
-            confidence_scores = self.model.predict_proba(X_scaled)[:, 1]
+            proba = self.model.predict_proba(X_scaled)
+        # Confidence: max non-abstain probability (classes 0..2)
+        confidence_scores = proba[:, :3].max(axis=1)
         
         # Calculate metrics
+        # Multiclass-friendly metrics
         metrics = {
             'accuracy': accuracy_score(y, predictions),
-            'precision': precision_score(y, predictions, zero_division=0),
-            'recall': recall_score(y, predictions, zero_division=0),
-            'f1': f1_score(y, predictions, zero_division=0),
-            'roc_auc': roc_auc_score(y, confidence_scores)
+            'precision': precision_score(y, predictions, average='macro', zero_division=0),
+            'recall': recall_score(y, predictions, average='macro', zero_division=0),
+            'f1': f1_score(y, predictions, average='macro', zero_division=0)
         }
+        # Multiclass ROC-AUC (one-vs-rest) if possible
+        try:
+            metrics['roc_auc_ovr'] = roc_auc_score(y, proba, multi_class='ovr')
+        except Exception:
+            pass
         
         # High-confidence metrics
         if self.high_confidence_threshold is not None:
@@ -496,10 +502,10 @@ class Orchestrator:
                 conf_high_conf = confidence_scores[high_conf_mask]
                 
                 high_conf_metrics = {
-                    'high_conf_precision': precision_score(y_high_conf, pred_high_conf, zero_division=0),
-                    'high_conf_recall': recall_score(y_high_conf, pred_high_conf, zero_division=0),
+                    'high_conf_precision': precision_score(y_high_conf, pred_high_conf, average='macro', zero_division=0),
+                    'high_conf_recall': recall_score(y_high_conf, pred_high_conf, average='macro', zero_division=0),
                     'high_conf_coverage': high_conf_mask.mean(),
-                    'high_conf_count': high_conf_mask.sum()
+                    'high_conf_count': int(high_conf_mask.sum())
                 }
                 metrics.update(high_conf_metrics)
         

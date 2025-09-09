@@ -1,2 +1,12 @@
 *.joblib
 models/*/
+
+# Artifacts and runs
+artifacts/**
+models/run_**
+results/run_**
+results/mc_*/*_cm.png
+__pycache__/**
+*.log
+*.tmp
+.DS_Store

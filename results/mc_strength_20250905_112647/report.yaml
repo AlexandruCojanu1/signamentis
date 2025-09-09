@@ -1,0 +1,548 @@
+confusion_matrices:
+  lgbm_test:
+  - - 1385
+    - 279
+    - 0
+  - - 256
+    - 12127
+    - 207
+  - - 0
+    - 49
+    - 925
+  lgbm_val:
+  - - 1999
+    - 345
+    - 0
+  - - 269
+    - 14643
+    - 218
+  - - 0
+    - 67
+    - 1380
+  rf_test:
+  - - 1242
+    - 422
+    - 0
+  - - 194
+    - 12183
+    - 213
+  - - 0
+    - 65
+    - 909
+  rf_val:
+  - - 1762
+    - 582
+    - 0
+  - - 193
+    - 14704
+    - 233
+  - - 0
+    - 81
+    - 1366
+feature_importance_global:
+  lgbm:
+    current_open: !!python/object/apply:numpy.core.multiarray.scalar
+    - &id001 !!python/object/apply:numpy.dtype
+      args:
+      - i4
+      - false
+      - true
+      state: !!python/tuple
+      - 3
+      - <
+      - null
+      - null
+      - null
+      - -1
+      - -1
+      - 0
+    - !!binary |
+      hSUAAA==
+    current_volume: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      OmoAAA==
+    hour_cos: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      eCUAAA==
+    hour_sin: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      7R4AAA==
+    m15_avg_range: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      8UUAAA==
+    m15_current_range_percentile: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      14MAAA==
+    m15_momentum_1h: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      RDEAAA==
+    m15_range_volatility: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      uUoAAA==
+    m15_trend_slope: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      8zgAAA==
+    m15_vol_regime: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      dkkAAA==
+    m5_avg_range_3: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      5S8AAA==
+    m5_avg_range_6: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      FTAAAA==
+    m5_max_move_3: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      TzAAAA==
+    m5_price_acceleration: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      IDMAAA==
+    m5_price_momentum_6: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      OiUAAA==
+    m5_range_expansion: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      mjwAAA==
+    m5_resistance_distance: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      nDQAAA==
+    m5_support_distance: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      JzgAAA==
+    m5_volatility_3: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      ZDIAAA==
+    m5_volatility_6: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      XDkAAA==
+    m5_volume_avg: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      DosAAA==
+    m5_volume_trend: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      rjwAAA==
+    price_level_diff: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      l5gAAA==
+    trend_strength_ratio: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      TCwAAA==
+    vol_m5_vs_m15: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      NzwAAA==
+  rf:
+    current_close: !!python/object/apply:numpy.core.multiarray.scalar
+    - &id002 !!python/object/apply:numpy.dtype
+      args:
+      - f8
+      - false
+      - true
+      state: !!python/tuple
+      - 3
+      - <
+      - null
+      - null
+      - null
+      - -1
+      - -1
+      - 0
+    - !!binary |
+      Jo098PdLgD8=
+    current_high: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      aZTD3GB/hT8=
+    current_low: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      J7s4Sqc5gj8=
+    current_open: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      wTpcHd/Qgj8=
+    current_volume: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      uAtbrw7TpT8=
+    m15_avg_range: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      WwgMdKvupj8=
+    m15_current_range_percentile: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      uyqVZ9wWsT8=
+    m15_momentum_1h: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      D6fYN+s+hD8=
+    m15_range_volatility: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      HTFG9mVQoz8=
+    m15_trend_slope: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      6MBvHsrEeD8=
+    m15_vol_regime: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      v9WB0yY7jz8=
+    m5_avg_range_3: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      OBEwlKV1mT8=
+    m5_avg_range_6: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      Fdu4Nev0oD8=
+    m5_max_move_3: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      OFVbgezIlD8=
+    m5_price_momentum_3: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      QeSs8h1Udj8=
+    m5_resistance_distance: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      BrmVqwQzgz8=
+    m5_support_distance: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      TZNinhxXhD8=
+    m5_volatility_3: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      ixj0RwgThj8=
+    m5_volatility_6: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      B+G8h9v0nT8=
+    m5_volume_avg: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      ESJtznPIsD8=
+    m5_volume_trend: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      RSlalxyQcz8=
+    price_level_alignment: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      FkOUvQrWvT8=
+    price_level_diff: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      keW1OHQr1D8=
+    trend_strength_ratio: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      c2EGlkGuqj8=
+    vol_m5_vs_m15: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      WGKFK6RkhT8=
+feature_importance_per_class:
+  MEDIUM:
+    current_volume: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      xwIAAA==
+    m15_avg_range: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      IwIAAA==
+    m15_current_range_percentile: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      HAUAAA==
+    m15_momentum_1h: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      YgEAAA==
+    m15_range_volatility: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      7wEAAA==
+    m15_trend_slope: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      OAEAAA==
+    m15_vol_regime: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      6QEAAA==
+    m5_avg_range_3: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      DQEAAA==
+    m5_avg_range_6: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      DwEAAA==
+    m5_max_move_3: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      BwEAAA==
+    m5_range_expansion: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      RwEAAA==
+    m5_resistance_distance: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      KQEAAA==
+    m5_support_distance: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      TwEAAA==
+    m5_volatility_3: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      AQEAAA==
+    m5_volatility_6: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      IwEAAA==
+    m5_volume_avg: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      mAQAAA==
+    m5_volume_trend: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      QAEAAA==
+    price_level_diff: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      cgYAAA==
+    trend_strength_ratio: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      EwEAAA==
+    vol_m5_vs_m15: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      KwEAAA==
+  STRONG:
+    current_volume: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      7QIAAA==
+    hour_cos: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      EAEAAA==
+    m15_avg_range: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      RQEAAA==
+    m15_current_range_percentile: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      lAQAAA==
+    m15_momentum_1h: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      pwEAAA==
+    m15_range_volatility: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      fQIAAA==
+    m15_trend_slope: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      OQEAAA==
+    m15_vol_regime: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      OgIAAA==
+    m5_avg_range_3: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      GwEAAA==
+    m5_max_move_3: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      NgEAAA==
+    m5_range_expansion: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      CwEAAA==
+    m5_resistance_distance: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      bQEAAA==
+    m5_support_distance: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      WwEAAA==
+    m5_volatility_3: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      CwEAAA==
+    m5_volatility_6: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      VgEAAA==
+    m5_volume_avg: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      1QQAAA==
+    m5_volume_trend: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      PAEAAA==
+    price_level_diff: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      GQYAAA==
+    trend_strength_ratio: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      QAEAAA==
+    vol_m5_vs_m15: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      MQEAAA==
+  WEAK:
+    current_volume: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      /AIAAA==
+    m15_avg_range: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      3AIAAA==
+    m15_current_range_percentile: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      VwQAAA==
+    m15_momentum_1h: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      CAEAAA==
+    m15_range_volatility: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      3gEAAA==
+    m15_trend_slope: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      NgEAAA==
+    m15_vol_regime: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      lQEAAA==
+    m5_avg_range_3: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      OQEAAA==
+    m5_avg_range_6: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      gAEAAA==
+    m5_max_move_3: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      SQEAAA==
+    m5_price_acceleration: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      KwEAAA==
+    m5_range_expansion: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      dgEAAA==
+    m5_resistance_distance: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      MAEAAA==
+    m5_support_distance: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      hQEAAA==
+    m5_volatility_3: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      CgEAAA==
+    m5_volatility_6: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      cAEAAA==
+    m5_volume_avg: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      3wMAAA==
+    m5_volume_trend: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      cwEAAA==
+    price_level_diff: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      iQQAAA==
+    vol_m5_vs_m15: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      YwEAAA==
+metrics:
+  lgbm_test:
+    accuracy: 0.9480562122406094
+    f1_macro: 0.8949944830809132
+    roc_auc_ovr: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      c8dQHBWt7z8=
+  lgbm_validation:
+    accuracy: 0.9524866550393742
+    f1_macro: 0.914496657792335
+    roc_auc_ovr: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      i6xJQR3D7z8=
+  rf_test:
+    accuracy: 0.9412923561859732
+    f1_macro: 0.8777549369346289
+    roc_auc_ovr: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      fYanT2uY7z8=
+  rf_validation:
+    accuracy: 0.9424449024892976
+    f1_macro: 0.8936436909265465
+    roc_auc_ovr: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id002
+    - !!binary |
+      2xZgCIKw7z8=
+thresholds:
+  high: 0.8072608108652722
+  low: 0.21278664409785192
+  p_high: 0.85
+  p_low: 0.15
